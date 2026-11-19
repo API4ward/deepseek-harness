@@ -47,7 +47,7 @@ git fetch upstream --tags
 - `AG-<编号>` 是 Notion 看板卡片的 ID。分支名、PR 标题都带上它，看板才能自动关联 PR（见第 7 节）。
 - 同步 PR 必须保留上游提交的祖先关系。Squash 或 rebase 会让 Git 失去“哪些上游提交已合入”的记录，下次同步会把同样的冲突再来一遍。GitHub 仓库设置里需要同时允许 squash merge 和 merge commit。
 - `master` 上不做 force-push；任何改写共享分支历史的操作需要先征得负责人同意。
-- 上游仓库自带的 GitHub Actions 工作流（发布、桌面打包、自托管 runner 等）在 AlfredGo 仓库里大多不适用。在 GitHub 的 Actions 页面禁用不需要的工作流，而不是删除或修改工作流文件，这样不会产生同步冲突。
+- 上游仓库自带的 GitHub Actions 工作流按用途分别处理：保留 `ci.yml` 等 PR 检查；依赖上游专有资源的工作流（上游 GitHub App 私钥、自托管 runner、Cloudflare、npm 发布凭据）以及 `stale-pull-requests.yml`、`e2e.yml` 等定时任务，在 GitHub 的 Actions 页面逐个禁用。禁用在仓库设置中进行，不删除或修改工作流文件，因此不会产生同步冲突。
 
 ## 3. 保持定制改动隔离
 
@@ -143,6 +143,5 @@ AlfredGo 自有的流程文档、脚本和台账放在仓库根目录的 `alfred
 
 ## 8. 待确认事项
 
-- 上游 DHS 的确切仓库地址：本文按 `deepseek-harness/deepseek-harness` 编写。
 - AlfredGo 的产品形态（桌面端、Web、CLI 或 SDK），决定 AlfredGo profile 基于哪个上游 profile 构建。
 - 发布渠道与签名方式（见第 6 节）。
