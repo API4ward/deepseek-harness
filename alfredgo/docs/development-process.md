@@ -9,9 +9,10 @@
 - [3. 保持定制改动隔离](#3-保持定制改动隔离)
 - [4. 从上游 DHS 同步](#4-从上游-dhs-同步)
 - [5. 特性生命周期](#5-特性生命周期)
-- [6. 发布与版本号](#6-发布与版本号)
-- [7. Notion 看板与 GitHub 同步](#7-notion-看板与-github-同步)
-- [8. 待确认事项](#8-待确认事项)
+- [6. 日常开发步骤](#6-日常开发步骤)
+- [7. 发布与版本号](#7-发布与版本号)
+- [8. Notion 看板与 GitHub 同步](#8-notion-看板与-github-同步)
+- [9. 待确认事项](#9-待确认事项)
 
 ## 1. 仓库与远端
 
@@ -44,7 +45,7 @@ git fetch upstream --tags
 
 规则：
 
-- `AG-<编号>` 是 Notion 看板卡片的 ID。分支名、PR 标题都带上它，看板才能自动关联 PR（见第 7 节）。
+- `AG-<编号>` 是 Notion 看板卡片的 ID。分支名、PR 标题都带上它，看板才能自动关联 PR（见第 8 节）。
 - 同步 PR 必须保留上游提交的祖先关系。Squash 或 rebase 会让 Git 失去“哪些上游提交已合入”的记录，下次同步会把同样的冲突再来一遍。GitHub 仓库设置里需要同时允许 squash merge 和 merge commit。
 - `master` 上不做 force-push；任何改写共享分支历史的操作需要先征得负责人同意。
 - 上游仓库自带的 GitHub Actions 工作流按用途分别处理：保留 `ci.yml` 等 PR 检查；依赖上游专有资源的工作流（上游 GitHub App 私钥、自托管 runner、Cloudflare、npm 发布凭据）以及 `stale-pull-requests.yml`、`e2e.yml` 等定时任务，在 GitHub 的 Actions 页面逐个禁用。禁用在仓库设置中进行，不删除或修改工作流文件，因此不会产生同步冲突。
@@ -108,14 +109,50 @@ AlfredGo 自有的流程文档、脚本和台账放在仓库根目录的 `alfred
 - 任一关卡未通过时，卡片退回上一状态，并在卡片上写明原因。
 - 测试阶段发现的问题：小问题在原卡片上开修复 PR；独立问题新建“缺陷”类型卡片。
 
-## 6. 发布与版本号
+## 6. 日常开发步骤
+
+本节是卡片进入“开发中”之后的具体操作。环境准备和仓库通用命令以上游 [docs/development.md](../../docs/development.md) 为准，这里只列 AlfredGo 额外的约定。
+
+### 环境
+
+- Node.js 24.9 或更高版本、pnpm；在仓库根目录运行 `pnpm install`。
+- 按第 1 节配置 `upstream` 远端和 rerere。
+- 需要真实模型调用时，在根目录 `.env` 中设置 `DEEPSEEK_API_KEY`；`.env` 不提交。
+
+### 从卡片到 PR
+
+1. 开工前确认卡片已通过 G2，并且 `master` 是最新的：`git switch master && git pull`。
+2. 建分支：`git switch -c feat/AG-<编号>-<简述>`（缺陷用 `fix/`）。
+3. 开发：按 G2 评审通过的设计实现；新增代码遵守根目录 `AGENTS.md` 的约定（插件化、类型、JSDoc、测试与快照要求）。确需修改上游文件时，同一 PR 内更新 [PATCHES.md](../PATCHES.md)。
+4. 提交：提交信息沿用上游的 Conventional Commits 格式，例如 `feat(alfredgo): 新增 xxx 插件`、`fix(alfredgo): 修复 xxx`；一个提交只做一件事。
+5. 本地检查：按根目录 `AGENTS.md` 的“Run relevant checks locally”选择与改动相关的最小检查，常用的是相关包的 `pnpm run test`、`pnpm run typecheck`、`pnpm run lint`；改了文档运行 `pnpm run doc-sync`；交付前运行 `pnpm run build`。不默认跑全量测试，全量由 CI 负责。
+6. 开 PR：推送分支，PR 标题以 `AG-<编号>:` 开头，正文按仓库 PR 模板填写（动机、改动、测试、AI 使用声明），并附上看板卡片链接。尚未完成时开草稿 PR。
+7. 更新卡片：填写「PR 链接」，确认状态为“开发中”。
+
+### 评审与合入
+
+- 评审人检查：实现是否与 G2 设计一致、测试是否覆盖验收标准、`PATCHES.md` 是否与实际改动一致、文档是否同步更新。
+- 评审意见处理完后重新请求评审；CI 必须为绿色才能合入。
+- 特性和缺陷 PR 用 squash merge 合入 `master`，合入后删除分支；卡片移到“测试中”，进入 G4 验收。
+
+### CI
+
+启用 GitHub Actions 后只保留与 AlfredGo 相关的 PR 检查（`ci.yml`、`expected-filenames.yml`、`ci-python.yml`）。依赖上游专有资源（上游 GitHub App 私钥、自托管 runner、Cloudflare、npm 发布凭据）的工作流和定时任务保持禁用，原因见第 2 节。
+
+### 与 Claude 协作
+
+- 新特性：在项目对话中描述需求，Claude 在看板上建“提案”卡片并起草设计；G1、G2 由负责人决定。
+- 开发：Claude 按上述步骤建分支、开 PR，并在 PR 开启和合并时更新卡片状态。
+- 上游同步：可以直接让 Claude 按第 4 节执行一次同步，冲突处理结果在同步 PR 中说明。
+
+## 7. 发布与版本号
 
 - 版本号格式：`<上游版本>-ag.<序号>`，例如基于上游 0.2.2 的第一个 AlfredGo 版本是 `0.2.2-ag.1`；同步到新的上游版本后序号从 1 重新开始。
 - Git tag 使用 `alfredgo/v<版本号>`，例如 `alfredgo/v0.2.2-ag.1`，与上游 tag 不冲突。
 - 发布前在 `release/<版本号>` 分支上做一次完整验收；发布后的紧急修复先合入 `master`，再 cherry-pick 到 release 分支。
 - 打包、签名、分发渠道等具体发布方式在第一个需要发布的特性设计时确定，届时补充到本节。
 
-## 7. Notion 看板与 GitHub 同步
+## 8. Notion 看板与 GitHub 同步
 
 看板是 Notion 中的“AlfredGo 开发看板”数据库，状态列为 提案 → 方案设计 → 开发中 → 测试中 → 已完成，属性包括类型（特性 / 上游同步 / 缺陷）、负责人、PR 链接和自动编号 ID（`AG-<编号>`）。
 
@@ -141,7 +178,7 @@ AlfredGo 自有的流程文档、脚本和台账放在仓库根目录的 `alfred
 - **备选：GitHub Action。** 若 Notion 集成不可用，可在仓库中新增一个监听 `pull_request` 事件的工作流，用 Notion API（仓库 secret `NOTION_TOKEN`）按上表更新卡片。工作流文件放在 `.github/workflows/alfredgo-*.yml`，属于 AlfredGo 新增文件，不影响上游同步。
 - **过渡：由 Claude 维护。** 在上述自动化启用之前，由 Claude 在开 PR、合并 PR 时同步更新卡片。
 
-## 8. 待确认事项
+## 9. 待确认事项
 
 - AlfredGo 的产品形态（桌面端、Web、CLI 或 SDK），决定 AlfredGo profile 基于哪个上游 profile 构建。
-- 发布渠道与签名方式（见第 6 节）。
+- 发布渠道与签名方式（见第 7 节）。
