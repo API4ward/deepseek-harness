@@ -1,0 +1,97 @@
+# Bilingual-pair consistency record for README.md (docs/i18n/README.md): per heading
+# section, a hash of its English and Chinese blocks outside code blocks and generated regions.
+# After editing either side, bring the other along and re-record with:
+#   pnpm run verify-translation-pairing --write packages/alfredgo/alfredgo-secret-guard/README.md
+/:
+  en: 3a08ec9de9c174a5
+  zh: a5ab24ac64eeec70
+/deepseek-ai-dsh-alfredgo-secret-guard:
+  en: 09da2a3c60f0502b
+  zh: 103fffcb70d95f9b
+/deepseek-ai-dsh-alfredgo-secret-guard/summary:
+  en: fbd51c435351a98a
+  zh: 93db5311119fcb35
+/deepseek-ai-dsh-alfredgo-secret-guard/table-of-contents:
+  en: d152484eb41ac6b4
+  zh: cf666e604d5d044e
+/deepseek-ai-dsh-alfredgo-secret-guard/use-this-package:
+  en: bbff250eba0f1b89
+  zh: e21edbd9a16225c7
+/deepseek-ai-dsh-alfredgo-secret-guard/use-this-package/prepare-agentsecret:
+  en: ad9bbfef2f732107
+  zh: 2347428c59a5ff41
+/deepseek-ai-dsh-alfredgo-secret-guard/use-this-package/add-it-to-a-profile:
+  en: 13de5e031193d076
+  zh: fb20901f6ddb0e15
+/deepseek-ai-dsh-alfredgo-secret-guard/use-this-package/what-the-user-sees:
+  en: 48a2ed3723b470f6
+  zh: e00257ea075fecea
+/deepseek-ai-dsh-alfredgo-secret-guard/use-this-package/what-can-go-wrong:
+  en: 1df57c2ce0eb62ae
+  zh: bf72488b35922e1e
+/deepseek-ai-dsh-alfredgo-secret-guard/understand-the-implementation:
+  en: 51bdfa1e4ba98df0
+  zh: 498e38cd22d7f274
+/deepseek-ai-dsh-alfredgo-secret-guard/further-exploration:
+  en: 3e627e03a84cd2c9
+  zh: 4f1f0267e61c9f7c
+/deepseek-ai-dsh-alfredgo-secret-guard/model-experience:
+  en: 215e7ba838619b7b
+  zh: a311da3843709f90
+/deepseek-ai-dsh-alfredgo-secret-guard/model-experience/credential-guidance:
+  en: abe2dd53cf30a07c
+  zh: e2cf97ac4ed9c627
+/deepseek-ai-dsh-alfredgo-secret-guard/model-experience/credential-guidance/what-the-model-sees:
+  en: c4c437b5811c0952
+  zh: a55bc8128f2f86f1
+/deepseek-ai-dsh-alfredgo-secret-guard/model-experience/credential-guidance/what-the-model-sees/guidance-text:
+  en: 8f57292f6821da96
+  zh: 3ea44601363df734
+/deepseek-ai-dsh-alfredgo-secret-guard/model-experience/credential-guidance/token-effect:
+  en: 2af99e025303114d
+  zh: f77578d3a5603d29
+/deepseek-ai-dsh-alfredgo-secret-guard/model-experience/credential-guidance/kv-cache-effect:
+  en: ef9cabe3b4bf1c81
+  zh: 9a72840a8841d017
+/deepseek-ai-dsh-alfredgo-secret-guard/model-experience/the-secret-write-file-tool:
+  en: dbf87f80146b7b64
+  zh: e6a749a39be8d6cd
+/deepseek-ai-dsh-alfredgo-secret-guard/model-experience/the-secret-write-file-tool/what-the-model-sees:
+  en: 273368e4ba204750
+  zh: d05a419378bf0054
+/deepseek-ai-dsh-alfredgo-secret-guard/model-experience/the-secret-write-file-tool/token-effect:
+  en: 4f4986016836adb1
+  zh: 5a8f17f67035e391
+/deepseek-ai-dsh-alfredgo-secret-guard/model-experience/the-secret-write-file-tool/kv-cache-effect:
+  en: 965d9bdf20f36aff
+  zh: 9fa080a6100c45ee
+/deepseek-ai-dsh-alfredgo-secret-guard/model-experience/tool-results-with-credentials:
+  en: 2583d1ce82ca3a74
+  zh: 40a96b755943021e
+/deepseek-ai-dsh-alfredgo-secret-guard/model-experience/tool-results-with-credentials/what-the-model-sees:
+  en: 1438a7aee59d9cf3
+  zh: bcbfa0d86bc62ec8
+/deepseek-ai-dsh-alfredgo-secret-guard/model-experience/tool-results-with-credentials/token-effect:
+  en: 6a1ab0d859538fdf
+  zh: 880d3505f34c031d
+/deepseek-ai-dsh-alfredgo-secret-guard/model-experience/tool-results-with-credentials/kv-cache-effect:
+  en: b14c5585c526c646
+  zh: 1913d16bfd007ca4
+/deepseek-ai-dsh-alfredgo-secret-guard/model-experience/the-secret-guard-mcp-server:
+  en: 43da1f623a5fcf6e
+  zh: 6e310a6931d10b45
+/deepseek-ai-dsh-alfredgo-secret-guard/model-experience/the-secret-guard-mcp-server/what-the-model-sees:
+  en: 2c34c57280eeecaa
+  zh: 2023de9e21e5857c
+/deepseek-ai-dsh-alfredgo-secret-guard/model-experience/the-secret-guard-mcp-server/token-effect:
+  en: d1d5fa19eea81bf0
+  zh: 3fbb9176bc5e78d3
+/deepseek-ai-dsh-alfredgo-secret-guard/model-experience/the-secret-guard-mcp-server/kv-cache-effect:
+  en: f5cbbdefefffa9de
+  zh: 107c8a9f6fe63c61
+/deepseek-ai-dsh-alfredgo-secret-guard/known-limitations-and-deferred-work:
+  en: 5baebf302cdda0cf
+  zh: 8d93839657702322
+/deepseek-ai-dsh-alfredgo-secret-guard/known-limitations-and-deferred-work/dev-note:
+  en: 312c07e7d6a2e083
+  zh: 37dc90e9669da113

@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Identifiants AgentSecret",
+    "description": "Laisse l'agent utiliser vos identifiants via les approbations AgentSecret, tandis que le modèle ne voit que des références."
+  }
+}

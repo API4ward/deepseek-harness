@@ -124,6 +124,14 @@ const SERVICE_ROLES: ServiceRole[] = [
     note: 'Reads the current catalog text of an official plugin card and enables the plugin through the profile plugin manager after a click.',
   },
   {
+    key: 'secretApprover',
+    pkg: 'alfredgo-secret-approver',
+    title: 'AlfredGo AgentSecret relay forwarder',
+    mode: 'service',
+    consumers: ['alfredgo-client-secret-approver'],
+    note: 'Forwards the browser approver\'s allowlisted calls to the configured AgentSecret relay; bodies hold only signed texts and sealed boxes.',
+  },
+  {
     key: 'deepseekChatImport',
     pkg: 'deepseek-chat-import',
     title: 'DeepSeek chat export import',

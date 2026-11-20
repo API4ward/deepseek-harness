@@ -203,6 +203,54 @@ export interface Config {
 ```
 <!-- END GENERATED config-catalog:@deepseek-ai/dsh-agent-tool-presentation -->
 
+<!-- BEGIN GENERATED config-catalog:@deepseek-ai/dsh-alfredgo-secret-approver -->
+<a id="deepseek-aidsh-alfredgo-secret-approver"></a>
+
+## `@deepseek-ai/dsh-alfredgo-secret-approver`
+
+- `inject`: `typert`
+- `source`: [`packages/alfredgo/alfredgo-secret-approver/src/index.ts:24`](../packages/alfredgo/alfredgo-secret-approver/src/index.ts)
+
+```ts config-catalog
+/** Plugin configuration. */
+export interface Config {
+  /** Origin of the AgentSecret relay, such as `http://127.0.0.1:8780`. */
+  relayUrl: string
+}
+```
+<!-- END GENERATED config-catalog:@deepseek-ai/dsh-alfredgo-secret-approver -->
+
+<!-- BEGIN GENERATED config-catalog:@deepseek-ai/dsh-alfredgo-secret-guard -->
+<a id="deepseek-aidsh-alfredgo-secret-guard"></a>
+
+## `@deepseek-ai/dsh-alfredgo-secret-guard`
+
+- `inject`: `tools` · `fs` · `systemPrompt`
+- `source`: [`packages/alfredgo/alfredgo-secret-guard/src/index.ts:39`](../packages/alfredgo/alfredgo-secret-guard/src/index.ts)
+
+```ts config-catalog
+/** AgentSecret commands, injector address, and task settings. */
+export interface Config {
+  /** Path of the `agentsecret` command that creates and revokes injector tasks. */
+  agentsecret: string
+  /** Path of the `secret-guard` command that runs the MCP bridge. */
+  secretGuard: string
+  /** Agent API origin of the running injector (`agentsecret injector serve`). */
+  injectorUrl: string
+  /** Injector state directory, passed to `agentsecret injector --state` and protected from tools. */
+  injectorState: string
+  /** Project name the task is created for; approval rules on the approver match it. */
+  project: string
+  /** Directory holding the task-token file; created with mode 0700 and protected from tools. */
+  tokenDir: string
+  /** Longest wait for the user's answer to one approval, in milliseconds. */
+  approvalWaitMs: number
+  /** Further paths that tool calls must not name. */
+  protect: string[]
+}
+```
+<!-- END GENERATED config-catalog:@deepseek-ai/dsh-alfredgo-secret-guard -->
+
 <!-- BEGIN GENERATED config-catalog:@deepseek-ai/dsh-api-gateway -->
 <a id="deepseek-aidsh-api-gateway"></a>
 
@@ -5400,6 +5448,7 @@ export interface Config {
 | `@deepseek-ai/dsh-acp-app` | `cmdlineArgs` | [`packages/bundle/acp-app/src/index.ts`](../packages/bundle/acp-app/src/index.ts) |
 | `@deepseek-ai/dsh-action-cards` | `agents` · `sessionProjections` · `remoteAccess` | [`packages/experimental/action-cards/src/index.ts`](../packages/experimental/action-cards/src/index.ts) |
 | `@deepseek-ai/dsh-agent` | `sessionProjections` | [`packages/core/agent/src/index.ts`](../packages/core/agent/src/index.ts) |
+| `@deepseek-ai/dsh-alfredgo-client-secret-approver` | — | [`packages/alfredgo/alfredgo-client-secret-approver/src/index.ts`](../packages/alfredgo/alfredgo-client-secret-approver/src/index.ts) |
 | `@deepseek-ai/dsh-api-remote-access` | — | [`packages/api/remote-access/src/index.ts`](../packages/api/remote-access/src/index.ts) |
 | `@deepseek-ai/dsh-api-remotes` | `typertGateway` | [`packages/api/remotes/src/index.ts`](../packages/api/remotes/src/index.ts) |
 | `@deepseek-ai/dsh-authorization` | `credentials` | [`packages/credentials/authorization/src/index.ts`](../packages/credentials/authorization/src/index.ts) |

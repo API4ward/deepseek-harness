@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "AgentSecret 凭据",
+    "description": "经 AgentSecret 审批让 agent 使用你的凭据，模型只看到引用。"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "密码审批",
+    "description": "在 DHS 里保存密码，并逐次审批 agent 经 AgentSecret 使用它们。"
+  }
+}

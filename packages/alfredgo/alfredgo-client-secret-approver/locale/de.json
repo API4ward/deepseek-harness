@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Zugangsdaten-Freigabe",
+    "description": "Zugangsdaten in DHS speichern und jede Verwendung durch den Agenten über AgentSecret freigeben."
+  }
+}

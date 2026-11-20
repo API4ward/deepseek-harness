@@ -4467,6 +4467,8 @@ export const CLIENT_SLOT_API: readonly ClientSlotEntry[] = [
     slotInject: '',
     declaredBy: 'factory \'settings.section.view\' (client-ui-settings-general), so it exists while that definition is registered',
     occupants: [
+      'alfredgo-client-secret-approver ApproverSection id \'alfredgo-secret-approver\'',
+      'alfredgo-client-secret-approver HistorySection id \'alfredgo-secret-approver-history\'',
       'client-ui-agent-preset AgentPresetSection id \'agent-presets\'',
       'client-ui-plugin-manager PluginsSettingsLink',
       'client-ui-settings-account AccountSection id \'account\'',
@@ -4671,6 +4673,7 @@ export const CLIENT_SLOT_API: readonly ClientSlotEntry[] = [
     slotInject: '',
     declaredBy: 'an entry in \'root\' (client-ui-layout), so it exists while that entry is mounted',
     occupants: [
+      'alfredgo-client-secret-approver ApprovalOverlay id \'alfredgo-secret-approver\'',
       'client-ui-agent-team TeamDisableConfirmation id \'agent-team.disable\'',
       'client-ui-chat QuotaNoticeHost id \'chat.quota-notice\'',
       'client-ui-connector-account ConnectorAccountToastEntry id \'connector-account.notice\'',

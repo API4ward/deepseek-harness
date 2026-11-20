@@ -1,0 +1,37 @@
+# Bilingual-pair consistency record for README.md (docs/i18n/README.md): per heading
+# section, a hash of its English and Chinese blocks outside code blocks and generated regions.
+# After editing either side, bring the other along and re-record with:
+#   pnpm run verify-translation-pairing --write packages/alfredgo/alfredgo-secret-approver/README.md
+/:
+  en: d17c62da12db5126
+  zh: ff821ba881e2204d
+/deepseek-ai-dsh-alfredgo-secret-approver:
+  en: ab9898d691c75eba
+  zh: 6f76bc96ec89d155
+/deepseek-ai-dsh-alfredgo-secret-approver/summary:
+  en: f641a6678f500597
+  zh: 5f21c37c330dd6fb
+/deepseek-ai-dsh-alfredgo-secret-approver/table-of-contents:
+  en: d152484eb41ac6b4
+  zh: cf666e604d5d044e
+/deepseek-ai-dsh-alfredgo-secret-approver/use-this-package:
+  en: fcc9a5f97821b6d7
+  zh: 4cd20771782ce604
+/deepseek-ai-dsh-alfredgo-secret-approver/understand-the-implementation:
+  en: 63a030255e0d6602
+  zh: 40629ca9634d4613
+/deepseek-ai-dsh-alfredgo-secret-approver/further-exploration:
+  en: 998553ea3caaddf6
+  zh: 801caef078cfcfce
+/deepseek-ai-dsh-alfredgo-secret-approver/model-experience:
+  en: 0616251e8324e3ba
+  zh: 38c3d4d5ea12224d
+/deepseek-ai-dsh-alfredgo-secret-approver/model-experience/kv-cache-effect:
+  en: 60835eca1cee4e0e
+  zh: 3b5579ceccd5b5e7
+/deepseek-ai-dsh-alfredgo-secret-approver/known-limitations-and-deferred-work:
+  en: 9e2bc51d21708aa4
+  zh: 1b984a9568a96c30
+/deepseek-ai-dsh-alfredgo-secret-approver/known-limitations-and-deferred-work/dev-note:
+  en: d258879c4884d986
+  zh: e1f2f552b11259b9

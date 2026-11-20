@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "AgentSecret relay forwarder",
+    "description": "Forward the in-client credential approver to an AgentSecret relay."
+  }
+}

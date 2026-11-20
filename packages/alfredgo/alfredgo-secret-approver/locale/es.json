@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Reenvío al relay de AgentSecret",
+    "description": "Reenvía el aprobador de credenciales del cliente a un relay de AgentSecret."
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "AgentSecret relay 転送",
+    "description": "クライアント内の認証情報承認端末を AgentSecret relay に転送します。"
+  }
+}

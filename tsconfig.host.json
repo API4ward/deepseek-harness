@@ -619,6 +619,8 @@
     { "path": "./packages/mcp/mcp-resources" },
     { "path": "./packages/connector/linear" },
     { "path": "./packages/connector/notion" },
+    { "path": "./packages/alfredgo/alfredgo-secret-guard" },
+    { "path": "./packages/alfredgo/alfredgo-secret-approver" },
     { "path": "./packages/host/directory-picker" },
     { "path": "./packages/host/directory-picker-auto" },
     { "path": "./packages/host/directory-picker-browse" },
