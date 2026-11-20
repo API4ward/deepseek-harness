@@ -17,6 +17,7 @@ import { createMemoryStore, openIndexedDbStore } from './store.ts'
 import type { ApproverInjected, UiFailure } from './ui-actions.ts'
 import { ApproverSection } from './ApproverSection.tsx'
 import { ApprovalOverlay } from './ApprovalOverlay.tsx'
+import { HistorySection } from './HistorySection.tsx'
 import { NS, zh, en, ja, es, fr, de, ru, pt } from './locales.ts'
 
 export const inject = ['remote', 'slots', 'locale']
@@ -66,6 +67,7 @@ function registerUi(ctx: Context): void {
     addAutoRule: guarded(rule => approver.addAutoRule(rule)),
     removeAutoRule: guarded(index => approver.removeAutoRule(index)),
     decide: guarded((id, decision, choices, grant) => approver.decide(id, decision, choices, grant)),
+    clearHistory: guarded(() => approver.clearHistory()),
     clearFailure: () => { failure.set(null) },
   }
   let disposed = false
@@ -85,6 +87,10 @@ function registerUi(ctx: Context): void {
     name: 'settings.section', id: 'alfredgo-secret-approver', order: 50, label: () => ctx.locale.bind(NS)('nav'),
     locale: NS, inject: () => actions,
   }, ApproverSection))
+  ctx.slots.inject('settings.section', () => ctx.slots.register({
+    name: 'settings.section', id: 'alfredgo-secret-approver-history', order: 51, label: () => ctx.locale.bind(NS)('history.nav'),
+    locale: NS, inject: () => actions,
+  }, HistorySection))
   ctx.slots.inject('shell.overlay', () => ctx.slots.register({
     name: 'shell.overlay', id: 'alfredgo-secret-approver', locale: NS, inject: () => actions,
   }, ApprovalOverlay))

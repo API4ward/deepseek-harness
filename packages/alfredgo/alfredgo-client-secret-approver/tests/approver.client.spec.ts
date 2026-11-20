@@ -1,6 +1,6 @@
 /** The approver core against a fake relay and a fake injector that verify every signature and open every sealed box. */
 import { describe, expect, it } from 'vitest'
-import { Approver, ApproverError, type RelayPath, type RelayTransport } from '../src/client/approver.ts'
+import { Approver, ApproverError, MAX_HISTORY, type RelayPath, type RelayTransport } from '../src/client/approver.ts'
 import { b64, bytes, publicJwk, sealAad, unb64, type PublicJwk } from '../src/client/crypto.ts'
 import { createMemoryStore } from '../src/client/store.ts'
 
@@ -90,12 +90,13 @@ async function setup() {
     return entry
   }
   const hook = (kind: 'reveal' | 'fill', secrets: string[]) => ({ scope: kind, tool: 'read', target: '/srv/.env', summary: 'read .env', call: 'a'.repeat(64), secrets })
-  const approver = new Approver(createMemoryStore(), relay, () => clock)
+  const store = createMemoryStore()
+  const approver = new Approver(store, relay, () => clock)
   await approver.load()
   await approver.createDevice(` ${USER} `)
   approverKey.jwk = (JSON.parse(approver.getSnapshot().device!.pairing) as { jwk: PublicJwk }).jwk
   return {
-    approver, injector, entries, decisions, rules, calls, request, hook,
+    approver, store, relay, injector, entries, decisions, rules, calls, request, hook,
     unregister: () => { registered = false },
     expireToken: () => { tokenValid = false },
     advance: (ms: number) => { clock += ms },
@@ -247,7 +248,10 @@ describe('requests', () => {
     expect(s.decisions.map(d => [d.request_id, d.reason])).toEqual([
       ['a', 'secret_unavailable'], ['b', 'injector_not_paired'], ['c', 'signature_invalid'], ['d', 'request_invalid'], ['e', 'request_invalid'],
     ])
-    expect(s.approver.getSnapshot().notes.map(n => n.why)).toEqual(['secret_unavailable', 'injector_not_paired', 'signature_invalid', 'request_invalid', 'request_invalid'])
+    expect(s.approver.getSnapshot().history.map(h => [h.requestId, h.decision, h.way, h.reason])).toEqual([
+      ['e', 'deny', 'auto-deny', 'request_invalid'], ['d', 'deny', 'auto-deny', 'request_invalid'], ['c', 'deny', 'auto-deny', 'signature_invalid'],
+      ['b', 'deny', 'auto-deny', 'injector_not_paired'], ['a', 'deny', 'auto-deny', 'secret_unavailable'],
+    ])
   })
 
   it('checks MCP reference and GitHub use requests against the stored repositories', async () => {
@@ -286,7 +290,7 @@ describe('approval modes', () => {
     await s.request('x', 'reveal', s.hook('reveal', ['test_passwd']))
     await s.approver.refresh()
     expect(s.decisions.at(-1)).toMatchObject({ request_id: 'x', decision: 'approve' })
-    expect(s.approver.getSnapshot().notes[0]).toMatchObject({ why: 'all', automatic: true })
+    expect(s.approver.getSnapshot().history[0]).toMatchObject({ requestId: 'x', decision: 'approve', way: 'all' })
     await s.approver.setAllMode(0)
     await s.request('y', 'reveal', s.hook('reveal', ['test_passwd']))
     await s.approver.refresh()
@@ -306,7 +310,7 @@ describe('approval modes', () => {
     await s.approver.decide('g3', 'approve', {}, { seconds: 60 })
     await s.request('g4', 'fill', s.hook('fill', ['test_passwd']))
     await s.approver.refresh()
-    expect(s.approver.getSnapshot().notes[0]).toMatchObject({ why: 'grant' })
+    expect(s.approver.getSnapshot().history[0]).toMatchObject({ requestId: 'g4', way: 'grant', returned: { test_passwd: 'default' } })
     s.advance(61000)
     await s.request('g5', 'fill', s.hook('fill', ['test_passwd']))
     await s.approver.refresh()
@@ -324,7 +328,7 @@ describe('approval modes', () => {
     await s.request('f', 'fill', s.hook('fill', ['test_passwd']))
     await s.approver.refresh()
     expect(s.decisions.map(d => d.request_id)).toEqual(['r'])
-    expect(s.approver.getSnapshot().notes[0]).toMatchObject({ why: 'rule' })
+    expect(s.approver.getSnapshot().history[0]).toMatchObject({ requestId: 'r', way: 'rule' })
     await s.approver.removeAutoRule(0)
     expect(s.approver.getSnapshot().autoRules).toHaveLength(1)
   })
@@ -351,4 +355,54 @@ it('notifies subscribers until they unsubscribe', async () => {
   await s.approver.setAllMode(0)
   expect(count).toBe(1)
   expect(new ApproverError('relay', 'x').message).toBe('relay: x')
+})
+
+describe('approval history', () => {
+  it('records manual answers with value kinds and grants but never values, keeps it across reloads, and clears it', async () => {
+    const s = await ready()
+    await s.approver.addCopy('test_passwd', 'staging', 'other-value')
+    await s.request('h1', 'fill', s.hook('fill', ['test_passwd']))
+    await s.approver.refresh()
+    await s.approver.decide('h1', 'approve', { test_passwd: 'copy:staging' }, { times: 3 })
+    await s.request('h2', 'fill', { ...s.hook('fill', ['test_passwd']), call: 'b'.repeat(64) })
+    await s.request('h3', 'reveal', s.hook('reveal', ['test_passwd']))
+    await s.approver.setAllMode(0)
+    await s.approver.refresh()
+    await s.approver.decide('h3', 'deny')
+    const history = s.approver.getSnapshot().history
+    expect(history.map(h => [h.requestId, h.decision, h.way])).toEqual([['h3', 'deny', 'user'], ['h2', 'approve', 'grant'], ['h1', 'approve', 'user']])
+    expect(history[2]).toMatchObject({
+      kind: 'fill', project: 'alfredgo', secrets: ['test_passwd'], tool: 'read', target: '/srv/.env', operation: 'read .env',
+      returned: { test_passwd: 'copy:staging' }, grant: { times: 3 }, reason: '',
+    })
+    expect(history[0]).toMatchObject({ returned: {}, grant: null })
+    expect(JSON.stringify(history)).not.toContain(SECRET)
+    expect(JSON.stringify(history)).not.toContain('other-value')
+    const reloaded = new Approver(s.store, s.relay, s.now)
+    await reloaded.load()
+    expect(reloaded.getSnapshot().history.map(h => h.requestId)).toEqual(['h3', 'h2', 'h1'])
+    await s.approver.clearHistory()
+    expect(s.approver.getSnapshot().history).toEqual([])
+    expect(await s.store.history()).toEqual([])
+  })
+
+  it('records a typed value only as "manual"', async () => {
+    const s = await ready()
+    await s.request('m', 'fill', s.hook('fill', ['test_passwd']))
+    await s.approver.refresh()
+    await s.approver.decide('m', 'approve', { test_passwd: 'manual:typed-text' })
+    expect(s.approver.getSnapshot().history[0]?.returned).toEqual({ test_passwd: 'manual' })
+    expect(JSON.stringify(await s.store.history())).not.toContain('typed-text')
+  })
+
+  it('keeps at most the newest records', async () => {
+    const s = await ready()
+    await s.approver.setAllMode(60)
+    for (let i = 0; i <= MAX_HISTORY; i++) await s.request(`n${i}`, 'reveal', { ...s.hook('reveal', ['test_passwd']), call: String(i).padStart(64, '0') })
+    await s.approver.refresh()
+    expect(s.approver.getSnapshot().history).toHaveLength(MAX_HISTORY)
+    const stored = await s.store.history()
+    expect(stored).toHaveLength(MAX_HISTORY)
+    expect(stored.map(r => r.requestId)).not.toContain('n0')
+  }, 60000)
 })

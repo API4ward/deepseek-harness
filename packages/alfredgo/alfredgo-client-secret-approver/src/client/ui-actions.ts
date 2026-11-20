@@ -25,5 +25,7 @@ export interface ApproverInjected {
   addAutoRule: (rule: AutoRule) => Promise<void>
   removeAutoRule: (index: number) => Promise<void>
   decide: (requestId: string, decision: 'approve' | 'deny', choices: Readonly<Record<string, ValueChoice>>, grant: GrantChoice | null) => Promise<void>
+  /** Remove every approval history record from this browser. */
+  clearHistory: () => Promise<void>
   clearFailure: () => void
 }

@@ -10,7 +10,7 @@ import {
   bytes, compileMatcher, matcherBase, mockValue, publicJwk, seal, sealAad, sign, verify,
   type Matcher, type PublicJwk,
 } from './crypto.ts'
-import type { ApproverStore, AutoRule, Ciphertext, DeviceRecord, Grant, SecretRecord } from './store.ts'
+import type { ApproverStore, AutoRule, Ciphertext, DecisionWay, DeviceRecord, Grant, HistoryRecord, SecretRecord } from './store.ts'
 
 /** Relay routes the approver calls. */
 export type RelayPath = '/device/challenge' | '/device/login' | '/approver/rules' | '/approver/pending' | '/approver/decision'
@@ -59,15 +59,6 @@ export interface PendingRequest {
   readonly requestText: string
 }
 
-/** One line of the automatic-decision log. */
-export interface DecisionNote {
-  readonly at: number
-  readonly secrets: readonly string[]
-  readonly project: string
-  readonly why: RejectReason | 'all' | 'grant' | 'rule'
-  readonly automatic: boolean
-}
-
 /** Everything the settings page and the approval cards render. */
 export interface ApproverState {
   readonly loaded: boolean
@@ -82,7 +73,8 @@ export interface ApproverState {
   readonly allUntil: number
   readonly autoRules: readonly AutoRule[]
   readonly requests: readonly PendingRequest[]
-  readonly notes: readonly DecisionNote[]
+  /** Answered requests, newest first, at most {@link MAX_HISTORY}. */
+  readonly history: readonly HistoryRecord[]
 }
 
 /** What an approval returns for one credential: `default`, `copy:<label>`, `mock`, or `manual:<text>`. */
@@ -97,7 +89,8 @@ const REF_TYPES = new Set(['once', 'long'])
 const HOOK_KINDS = new Set<RequestKind>(['reveal', 'fill'])
 /** One sealed transfer carries at most 64 KiB. */
 const MAX_VALUE = 65536
-const MAX_NOTES = 20
+/** Records kept in the approval history; older ones are removed. */
+export const MAX_HISTORY = 2000
 
 interface RawEntry { readonly request_text: string; readonly signature: string }
 interface RawRequest {
@@ -136,7 +129,7 @@ export class Approver {
   private session: string | undefined
   private state: ApproverState = {
     loaded: false, device: null, connected: false, registered: null, relayInjectors: null, injectors: [], secrets: [],
-    allUntil: 0, autoRules: [], requests: [], notes: [],
+    allUntil: 0, autoRules: [], requests: [], history: [],
   }
 
   private readonly listeners = new Set<() => void>()
@@ -172,7 +165,7 @@ export class Approver {
   /** Load stored state, then sign in and fetch requests when a device exists; a sign-in failure leaves the page disconnected. */
   async load(): Promise<void> {
     this.device = await this.store.device()
-    await this.publishLocal({ loaded: true })
+    await this.publishLocal({ loaded: true, history: (await this.store.history()).reverse() })
     if (this.device === undefined) return
     try { await this.connect() } catch (error) {
       if (!(error instanceof ApproverError)) throw error
@@ -318,7 +311,6 @@ export class Approver {
     const data = await this.call('/approver/pending', {}, true)
     const relayInjectors = Array.isArray(data.injectors) ? data.injectors.filter((v): v is string => typeof v === 'string') : []
     const pending = new Map<string, { entry: RawEntry; request: RawRequest }>()
-    const notes: DecisionNote[] = []
     for (const raw of Array.isArray(data.requests) ? data.requests as RawEntry[] : []) {
       let request: RawRequest, problem: RejectReason | 'expired' | ''
       try {
@@ -327,18 +319,15 @@ export class Approver {
       } catch { continue }
       if (problem === 'expired') continue
       if (problem !== '') {
-        try { await this.sendDecision(raw, request, 'deny', problem, {}) } catch (error) {
+        try { await this.sendDecision(raw, request, 'deny', problem, {}, 'auto-deny', null) } catch (error) {
           if (!(error instanceof ApproverError)) throw error
-          continue
         }
-        notes.push({ at: this.now(), secrets: facets(request).names, project: request.project, why: problem, automatic: false })
         continue
       }
       const auto = await this.automatic(request)
       if (auto !== null) {
         try {
-          await this.sendDecision(raw, request, 'approve', '', auto.choices)
-          notes.push({ at: this.now(), secrets: facets(request).names, project: request.project, why: auto.why, automatic: true })
+          await this.sendDecision(raw, request, 'approve', '', auto.choices, auto.why, null)
           continue
         } catch (error) {
           if (!(error instanceof ApproverError)) throw error
@@ -349,7 +338,7 @@ export class Approver {
     this.pending = pending
     const requests: PendingRequest[] = []
     for (const { entry, request } of pending.values()) requests.push(await this.card(entry, request))
-    await this.publishLocal({ relayInjectors, requests, notes: [...notes, ...this.state.notes].slice(0, MAX_NOTES) })
+    await this.publishLocal({ relayInjectors, requests })
   }
 
   /**
@@ -363,7 +352,7 @@ export class Approver {
     const item = this.pending.get(requestId)
     if (item === undefined) return
     if (decision === 'approve' && Object.values(choices).includes('manual:')) throw new ApproverError('manual-required')
-    await this.sendDecision(item.entry, item.request, decision, '', choices)
+    await this.sendDecision(item.entry, item.request, decision, '', choices, 'user', decision === 'approve' ? grant : null)
     if (decision === 'approve' && grant !== null) {
       const f = facets(item.request)
       const grants = await this.store.setting('grants', [])
@@ -503,7 +492,10 @@ export class Approver {
     return await this.plain(secret)
   }
 
-  private async sendDecision(entry: RawEntry, p: RawRequest, decision: 'approve' | 'deny', reason: string, choices: Readonly<Record<string, ValueChoice>>): Promise<void> {
+  private async sendDecision(
+    entry: RawEntry, p: RawRequest, decision: 'approve' | 'deny', reason: RejectReason | '',
+    choices: Readonly<Record<string, ValueChoice>>, way: DecisionWay, grant: GrantChoice | null,
+  ): Promise<void> {
     const device = this.requireDevice()
     const body: Record<string, unknown> = { request_id: p.request_id, decision }
     if (reason !== '') body.reason = reason
@@ -518,6 +510,41 @@ export class Approver {
     }
     body.signature = await sign(device.signing, `secret-guard/decision/v3:${decision}:${reason}:${device.id}:${entry.request_text}`)
     await this.call('/approver/decision', body, true)
+    await this.record(entry, p, decision, reason, choices, way, grant)
+  }
+
+  /** Append an answered request to the history; only aliases and value kinds, never values. */
+  private async record(
+    entry: RawEntry, p: RawRequest, decision: 'approve' | 'deny', reason: RejectReason | '',
+    choices: Readonly<Record<string, ValueChoice>>, way: DecisionWay, grant: GrantChoice | null,
+  ): Promise<void> {
+    const f = facets(p)
+    const returned: Record<string, string> = {}
+    if (decision === 'approve' && (p.kind === 'use' || p.kind === 'fill')) {
+      for (const alias of f.names) {
+        const choice = choices[alias] ?? 'default'
+        returned[alias] = choice.startsWith('manual:') ? 'manual' : choice
+      }
+    }
+    const at = this.now()
+    const record: HistoryRecord = {
+      key: `${String(at).padStart(15, '0')}-${p.request_id}`, at, requestId: p.request_id, kind: p.kind, project: p.project,
+      task: p.task, injector: p.injector, secrets: f.names, tool: f.tool, target: f.target, operation: operation(p),
+      decision, way, reason, returned, grant, requestText: entry.request_text,
+    }
+    await this.store.addHistory(record)
+    const history = [record, ...this.state.history]
+    if (history.length > MAX_HISTORY) {
+      history.length = MAX_HISTORY
+      await this.store.trimHistory(history.at(-1)?.key ?? '')
+    }
+    this.state = { ...this.state, history }
+  }
+
+  /** Remove every approval history record from this browser. */
+  async clearHistory(): Promise<void> {
+    await this.store.clearHistory()
+    await this.publishLocal({ history: [] })
   }
 
   private async card(entry: RawEntry, p: RawRequest): Promise<PendingRequest> {

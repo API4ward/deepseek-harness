@@ -1,8 +1,9 @@
 /**
  * Browser storage of the approver: the device keys, encrypted credentials, paired
- * injectors, and approval modes. Keys are non-extractable `CryptoKey` objects that
+ * injectors, approval modes, and the approval history. Keys are non-extractable `CryptoKey` objects that
  * IndexedDB stores by structured clone, so they never leave this browser profile.
  */
+import type { RejectReason } from './approver.ts'
 import type { PublicJwk } from './crypto.ts'
 
 /** The approver device: signing key, credential vault key, and public pairing data. */
@@ -50,6 +51,38 @@ export interface Grant {
   readonly choices: Readonly<Record<string, string>>
 }
 
+/** How a decision was made. */
+export type DecisionWay = 'user' | 'all' | 'grant' | 'rule' | 'auto-deny'
+
+/** What an approval returned for one credential, without the value: `default`, `copy:<label>`, `mock`, or `manual`. */
+export type ReturnedValue = string
+
+/** One answered request in the approval history; holds aliases and value kinds, never a credential value. */
+export interface HistoryRecord {
+  /** Store key: zero-padded decision time and request id, so keys sort by time. */
+  readonly key: string
+  readonly at: number
+  readonly requestId: string
+  readonly kind: 'reference' | 'use' | 'reveal' | 'fill'
+  readonly project: string
+  readonly task: string
+  readonly injector: string
+  readonly secrets: readonly string[]
+  readonly tool: string
+  readonly target: string
+  readonly operation: string
+  readonly decision: 'approve' | 'deny'
+  readonly way: DecisionWay
+  /** Signed reject reason of an automatic denial; empty otherwise. */
+  readonly reason: RejectReason | ''
+  /** For approved `use` and `fill` requests, what each credential returned. */
+  readonly returned: Readonly<Record<string, ReturnedValue>>
+  /** "Allow n times" or "allow for n seconds" chosen with a manual approval. */
+  readonly grant: { readonly times: number } | { readonly seconds: number } | null
+  /** The exact request text the injector signed. */
+  readonly requestText: string
+}
+
 /** Values kept in the `settings` store, by key. */
 export interface SettingsRecords {
   allUntil: number
@@ -82,11 +115,19 @@ export interface ApproverStore {
   setting<K extends keyof SettingsRecords>(key: K, fallback: SettingsRecords[K]): Promise<SettingsRecords[K]>
   /** Store a setting. */
   putSetting<K extends keyof SettingsRecords>(key: K, value: SettingsRecords[K]): Promise<void>
+  /** @returns every history record, oldest first. */
+  history(): Promise<HistoryRecord[]>
+  /** Append one history record. */
+  addHistory(record: HistoryRecord): Promise<void>
+  /** Remove the history records older than `oldestKept`. */
+  trimHistory(oldestKept: string): Promise<void>
+  /** Remove every history record. */
+  clearHistory(): Promise<void>
 }
 
 /** IndexedDB database name; separate from AgentSecret's own page so the two never share a device. */
 export const DATABASE = 'alfredgo-secret-approver'
-const STORES = ['device', 'secrets', 'injectors', 'settings'] as const
+const STORES = ['device', 'secrets', 'injectors', 'settings', 'history'] as const
 
 /**
  * Open the approver's IndexedDB storage.
@@ -95,7 +136,8 @@ const STORES = ['device', 'secrets', 'injectors', 'settings'] as const
  */
 export function openIndexedDbStore(factory: IDBFactory): ApproverStore {
   const database = new Promise<IDBDatabase>((resolve, reject) => {
-    const request = factory.open(DATABASE, 1)
+    // Version 2 adds the `history` store; the upgrade only creates missing stores.
+    const request = factory.open(DATABASE, 2)
     request.onupgradeneeded = () => {
       for (const name of STORES) if (!request.result.objectStoreNames.contains(name)) request.result.createObjectStore(name)
     }
@@ -120,6 +162,10 @@ export function openIndexedDbStore(factory: IDBFactory): ApproverStore {
     remove: async (name, key) => { await run(name, 'readwrite', s => s.delete(key)) },
     setting: async (key, fallback) => (await run<SettingsRecords[typeof key] | undefined>('settings', 'readonly', s => s.get(key))) ?? fallback,
     putSetting: async (key, value) => { await run('settings', 'readwrite', s => s.put(value, key)) },
+    history: async () => await run('history', 'readonly', s => s.getAll()),
+    addHistory: async (record) => { await run('history', 'readwrite', s => s.put(record, record.key)) },
+    trimHistory: async (oldestKept) => { await run('history', 'readwrite', s => s.delete(IDBKeyRange.upperBound(oldestKept, true))) },
+    clearHistory: async () => { await run('history', 'readwrite', s => s.clear()) },
   }
 }
 
@@ -131,6 +177,7 @@ export function createMemoryStore(): ApproverStore {
   let device: DeviceRecord | undefined
   const maps = { secrets: new Map<string, SecretRecord>(), injectors: new Map<string, InjectorRecord>() }
   const settings = new Map<string, unknown>()
+  let history: HistoryRecord[] = []
   return {
     device: () => Promise.resolve(device),
     putDevice: (value) => { device = value; return Promise.resolve() },
@@ -140,5 +187,9 @@ export function createMemoryStore(): ApproverStore {
     remove: (name, key) => { maps[name].delete(key); return Promise.resolve() },
     setting: (key, fallback) => Promise.resolve((settings.has(key) ? settings.get(key) : fallback) as SettingsRecords[typeof key]),
     putSetting: (key, value) => { settings.set(key, value); return Promise.resolve() },
+    history: () => Promise.resolve([...history]),
+    addHistory: (record) => { history = [...history, record].sort((a, b) => a.key < b.key ? -1 : 1); return Promise.resolve() },
+    trimHistory: (oldestKept) => { history = history.filter(r => r.key >= oldestKept); return Promise.resolve() },
+    clearHistory: () => { history = []; return Promise.resolve() },
   }
 }

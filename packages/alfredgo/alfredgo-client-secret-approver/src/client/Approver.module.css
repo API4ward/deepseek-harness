@@ -148,3 +148,54 @@
   gap: 8px;
   justify-content: flex-end;
 }
+
+.records {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.record {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--dsw-alias-border-l1);
+  word-break: break-all;
+}
+
+.recordHead {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.recordHead time {
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.approved,
+.denied {
+  padding: 0 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.approved {
+  background: var(--dsw-alias-interactive-bg-hover);
+}
+
+.denied {
+  color: var(--dsw-alias-state-error-primary);
+  background: var(--dsw-alias-interactive-bg-hover);
+}
+
+.raw summary {
+  cursor: pointer;
+  color: var(--dsw-alias-label-secondary);
+}

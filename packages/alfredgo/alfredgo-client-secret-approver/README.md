@@ -44,7 +44,9 @@ Then open **Settings › Credential approvals**:
 3. Paste the injector's pairing data (`agentsecret injector pairing`) and pair it.
 4. Store credentials. Each saved change publishes matchers that let the injector recognise a credential without holding it.
 
-While DHS is open and connected, the client fetches pending requests every two seconds. A card shows the project, credentials, tool, target, and operation, with **Deny**, **Allow once**, and **More…** (allow 3 or 10 times, or for 3 minutes, 10 minutes, or 1 hour). For a fill or an MCP use, the value returned can be the stored credential, a named copy, a mock of the same shape, or typed text. Requests this device can never approve, such as an unknown alias or an unpaired injector, are refused at once with a signed reason and listed under automatic decisions. Approve-all mode and automatic rules (kind, alias, tool, and target globs) answer for the user; each answer is still a signed decision.
+While DHS is open and connected, the client fetches pending requests every two seconds. A card shows the project, credentials, tool, target, and operation, with **Deny**, **Allow once**, and **More…** (allow 3 or 10 times, or for 3 minutes, 10 minutes, or 1 hour). For a fill or an MCP use, the value returned can be the stored credential, a named copy, a mock of the same shape, or typed text. Requests this device can never approve, such as an unknown alias or an unpaired injector, are refused at once with a signed reason. Approve-all mode and automatic rules (kind, alias, tool, and target globs) answer for the user; each answer is still a signed decision.
+
+**Settings › Approval history** lists every answer given in this browser, newest first: manual, approve-all, repeated or timed grants, rules, and automatic refusals. Each record holds the result, way, project, task, injector, aliases, tool, target, operation, the kind of value returned (stored, copy, mock, or typed), any grant, and the signed request text; it never holds a credential or typed text. The page searches aliases, project, and tool fuzzily and target and operation as substrings, filters by result and way, exports the matching records as JSON, and clears the history. It keeps the newest 2000 records.
 
 -----
 
@@ -56,7 +58,7 @@ While DHS is open and connected, the client fetches pending requests every two s
 
 [`src/client/approver.ts`](src/client/approver.ts) is a port of AgentSecret's `web/approver.js`; [`src/client/crypto.ts`](src/client/crypto.ts) holds the WebCrypto primitives (ECDSA P-256 signatures, ECIES sealing with HKDF-SHA256 and AES-256-GCM, PBKDF2 matchers) that match AgentSecret's `seal.py` and `matcher.py`. Signed texts use the prefixes `secret-guard/request/v1:`, `secret-guard/decision/v3:`, and `secret-guard/rules/v1:`. A sealed value is bound to the SHA-256 of the request text and addressed to the encryption key recorded at pairing, never to a key the relay supplies.
 
-[`src/client/store.ts`](src/client/store.ts) keeps the device, credentials, injectors, and modes in the IndexedDB database `alfredgo-secret-approver`, separate from AgentSecret's own page. [`src/client/index.ts`](src/client/index.ts) mounts the forwarder's Remote namespace, registers the `settings.section` page and the `shell.overlay` cards, and owns the polling timer.
+[`src/client/store.ts`](src/client/store.ts) keeps the device, credentials, injectors, modes, and approval history in the IndexedDB database `alfredgo-secret-approver` (version 2 added the `history` store), separate from AgentSecret's own page. [`src/client/index.ts`](src/client/index.ts) mounts the forwarder's Remote namespace, registers the two `settings.section` pages and the `shell.overlay` cards, and owns the polling timer.
 
 </details>
 

@@ -4468,6 +4468,7 @@ export const CLIENT_SLOT_API: readonly ClientSlotEntry[] = [
     declaredBy: 'factory \'settings.section.view\' (client-ui-settings-general), so it exists while that definition is registered',
     occupants: [
       'alfredgo-client-secret-approver ApproverSection id \'alfredgo-secret-approver\'',
+      'alfredgo-client-secret-approver HistorySection id \'alfredgo-secret-approver-history\'',
       'client-ui-agent-preset AgentPresetSection id \'agent-presets\'',
       'client-ui-plugin-manager PluginsSettingsLink',
       'client-ui-settings-account AccountSection id \'account\'',

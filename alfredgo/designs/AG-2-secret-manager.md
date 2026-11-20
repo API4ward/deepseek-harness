@@ -56,7 +56,7 @@ Jian 澄清：AG-2 的主体是把 AgentSecret 的**审批端**做进 DHS，成�
 | 包 | 位置 | 作用 |
 |:--|:--|:--|
 | `alfredgo-secret-approver`（Host） | DHS Host 进程 | Remote 服务 `secretApprover`：把审批端的请求转发给 relay（`/device/challenge`、`/device/login`、`/approver/rules`、`/approver/pending`、`/approver/decision`），只允许这五个路径。relay 校验 `Host`/`Origin` 且没有 CORS，浏览器不能直连，所以由 Host 转发；转发的内容只有签名、公钥和密封包，没有明文。配置 `relayUrl`。 |
-| `alfredgo-client-secret-approver`（Client） | DHS Web/桌面客户端（浏览器） | 移植 AgentSecret `web/approver.js`：设备密钥（WebCrypto，不可导出）、密码库（AES-GCM 加密后存 IndexedDB）、配对注入工具、编译并下发匹配器、检查与签名决定、密封给注入工具、全部同意/自动规则/允许 n 次。设置页一节“密码审批”管理设备、密码、注入工具和审批模式；客户端开着时每 2 秒取一次待审批请求，以浮层卡片显示（拒绝、允许 1 次、其他；fill 可选副本、mock、手动输入）。 |
+| `alfredgo-client-secret-approver`（Client） | DHS Web/桌面客户端（浏览器） | 移植 AgentSecret `web/approver.js`：设备密钥（WebCrypto，不可导出）、密码库（AES-GCM 加密后存 IndexedDB）、配对注入工具、编译并下发匹配器、检查与签名决定、密封给注入工具、全部同意/自动规则/允许 n 次。设置页一节“密码审批”管理设备、密码、注入工具和审批模式；客户端开着时每 2 秒取一次待审批请求，以浮层卡片显示（拒绝、允许 1 次、其他；fill 可选副本、mock、手动输入）。设置页另一节“审批记录”（Jian 2026-11-21 要求）：每次作答（人工、全部同意、多次或限时允许、规则、自动拒绝）写一条记录到 IndexedDB `history` 存储，只存别名、返回值类型和签名请求文本，不存密码；按时间倒序浏览，可搜索、按结果和方式筛选、导出 JSON、清空，最多保留 2000 条。 |
 | `alfredgo-secret-approver-bundle` | 插件页 | 组合上面两个包，用 `cordis.patch.yml` 一键启用。 |
 | `alfredgo-secret-guard`（已有，PR #2） | Host | 可选：reveal、`secret_write_file`、MCP。与审批端互不依赖。 |
 

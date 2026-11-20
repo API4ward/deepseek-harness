@@ -3,20 +3,12 @@ import { useState, type ReactNode } from 'react'
 import { Button, Input } from '@deepseek-ai/dsh-client-ui-primitives'
 import type { InjectFace, PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
 import type {} from '@deepseek-ai/dsh-client-ui-settings/client'
-import type { DecisionNote } from './approver.ts'
 import type { ApproverInjected } from './ui-actions.ts'
-import { NS, type ApproverKey } from './locales.ts'
+import { NS } from './locales.ts'
 import css from './Approver.module.css'
 
 /** Props of the approver settings page. */
 export type ApproverSectionProps = PropsRuntime<'settings.section'> & PropsLocale<typeof NS> & InjectFace<ApproverInjected>
-
-function noteKey(note: DecisionNote): ApproverKey {
-  switch (note.why) {
-    case 'all': case 'grant': case 'rule': return `why.${note.why}`
-    default: return `reason.${note.why}`
-  }
-}
 
 function CopyBox({ text, t }: { text: string; t: ApproverSectionProps['t'] }): ReactNode {
   const [copied, setCopied] = useState(false)
@@ -170,21 +162,7 @@ export function ApproverSection(props: ApproverSectionProps): ReactNode {
             <Button disabled={busy} onClick={() => { run(() => props.addAutoRule(rule), () => { setRule({ kind: '*', secret: '', tool: '', target: '' }) }) }}>{t('rule.add')}</Button>
           </section>
 
-          {state.notes.length === 0 ? null : (
-            <section className={css.group}>
-              <h3>{t('log.heading')}</h3>
-              <ul className={css.list}>
-                {state.notes.map(note => (
-                  <li key={`${note.at}-${note.project}-${note.secrets.join()}`}>
-                    {t('log.item', {
-                      time: new Date(note.at).toLocaleTimeString(), secrets: note.secrets.join(', '), project: note.project,
-                      why: t(noteKey(note)),
-                    })}
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
+          <p className={css.muted}>{t('log.hint')}</p>
         </>
       )}
     </div>

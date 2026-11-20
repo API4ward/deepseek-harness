@@ -44,7 +44,9 @@ kind: "package-reference"
 3. 粘贴注入工具的配对信息（`agentsecret injector pairing`）并配对。
 4. 保存密码。每次保存都会下发匹配器，注入工具凭它识别密码，但拿不到密码本身。
 
-DHS 开着并已连接时，客户端每两秒取一次待审批请求。卡片显示项目、密码、工具、目标和操作，按钮为**拒绝**、**允许（1 次）**和**其他…**（允许 3 次、10 次，或 3 分钟、10 分钟、1 小时）。fill 和 MCP 使用请求可以选择返回保存的密码、同名副本、形状相同的 mock 值或手动输入的值。本设备永远不能批准的请求（如未知别名、未配对的注入工具）立即以签名的原因拒绝，并列在自动处理记录里。全部同意模式和自动审批规则（类型、别名、工具、目标的通配）替用户作答，每个回答仍单独签名。
+DHS 开着并已连接时，客户端每两秒取一次待审批请求。卡片显示项目、密码、工具、目标和操作，按钮为**拒绝**、**允许（1 次）**和**其他…**（允许 3 次、10 次，或 3 分钟、10 分钟、1 小时）。fill 和 MCP 使用请求可以选择返回保存的密码、同名副本、形状相同的 mock 值或手动输入的值。本设备永远不能批准的请求（如未知别名、未配对的注入工具）立即以签名的原因拒绝。全部同意模式和自动审批规则（类型、别名、工具、目标的通配）替用户作答，每个回答仍单独签名。
+
+**设置 › 审批记录**按时间倒序列出这个浏览器里的每次作答：人工、全部同意模式、多次或限时允许、自动规则和自动拒绝。每条记录包含结果、方式、项目、任务、注入工具、别名、工具、目标、操作、返回值类型（保存的密码、副本、mock 或手动输入）、同时授权的次数或时长，以及签名的请求文本；从不包含密码或手动输入的内容。页面对别名、项目和工具做模糊搜索，对目标和操作做子串搜索，可按结果和方式筛选，可把匹配的记录导出为 JSON，也可清空。最多保留最新的 2000 条。
 
 -----
 
@@ -56,7 +58,7 @@ DHS 开着并已连接时，客户端每两秒取一次待审批请求。卡片�
 
 [`src/client/approver.ts`](src/client/approver.ts) 移植自 AgentSecret 的 `web/approver.js`；[`src/client/crypto.ts`](src/client/crypto.ts) 是 WebCrypto 原语（ECDSA P-256 签名，HKDF-SHA256 加 AES-256-GCM 的 ECIES 密封，PBKDF2 匹配器），与 AgentSecret 的 `seal.py`、`matcher.py` 一致。签名文本使用前缀 `secret-guard/request/v1:`、`secret-guard/decision/v3:` 和 `secret-guard/rules/v1:`。密封的值绑定请求文本的 SHA-256，只发给配对时记录的加密公钥，从不用 relay 提供的密钥。
 
-[`src/client/store.ts`](src/client/store.ts) 把设备、密码、注入工具和模式存在 IndexedDB 数据库 `alfredgo-secret-approver` 中，与 AgentSecret 自己的页面分开。[`src/client/index.ts`](src/client/index.ts) 挂载转发器的 Remote 命名空间，注册 `settings.section` 页面和 `shell.overlay` 卡片，并管理轮询定时器。
+[`src/client/store.ts`](src/client/store.ts) 把设备、密码、注入工具、模式和审批记录存在 IndexedDB 数据库 `alfredgo-secret-approver` 中（版本 2 新增 `history` 存储），与 AgentSecret 自己的页面分开。[`src/client/index.ts`](src/client/index.ts) 挂载转发器的 Remote 命名空间，注册两个 `settings.section` 页面和 `shell.overlay` 卡片，并管理轮询定时器。
 
 </details>
 
