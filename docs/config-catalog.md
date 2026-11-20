@@ -201,6 +201,37 @@ export interface Config {
 ```
 <!-- END GENERATED config-catalog:@deepseek-ai/dsh-agent-tool-presentation -->
 
+<!-- BEGIN GENERATED config-catalog:@deepseek-ai/dsh-alfredgo-secret-guard -->
+<a id="deepseek-aidsh-alfredgo-secret-guard"></a>
+
+## `@deepseek-ai/dsh-alfredgo-secret-guard`
+
+- `inject`: `tools` · `fs` · `systemPrompt`
+- `source`: [`packages/alfredgo/alfredgo-secret-guard/src/index.ts:46`](../packages/alfredgo/alfredgo-secret-guard/src/index.ts)
+
+```ts config-catalog
+/** AgentSecret commands, injector address, and task settings. */
+export interface Config {
+  /** Path of the `agentsecret` command that creates and revokes injector tasks. */
+  agentsecret: string
+  /** Path of the `secret-guard` command that runs the MCP bridge. */
+  secretGuard: string
+  /** Agent API origin of the running injector (`agentsecret injector serve`). */
+  injectorUrl: string
+  /** Injector state directory, passed to `agentsecret injector --state` and protected from tools. */
+  injectorState: string
+  /** Project name the task is created for; approval rules on the approver match it. */
+  project: string
+  /** Directory holding the task-token file; created with mode 0700 and protected from tools. */
+  tokenDir: string
+  /** Longest wait for the user's answer to one approval, in milliseconds. */
+  approvalWaitMs: number
+  /** Further paths that tool calls must not name. */
+  protect: string[]
+}
+```
+<!-- END GENERATED config-catalog:@deepseek-ai/dsh-alfredgo-secret-guard -->
+
 <!-- BEGIN GENERATED config-catalog:@deepseek-ai/dsh-api-gateway -->
 <a id="deepseek-aidsh-api-gateway"></a>
 

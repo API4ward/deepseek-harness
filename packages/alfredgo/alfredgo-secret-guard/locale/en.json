@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "AgentSecret credentials",
+    "description": "Let the agent use your credentials through AgentSecret approvals while the model sees only references."
+  }
+}

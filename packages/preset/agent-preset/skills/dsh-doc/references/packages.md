@@ -17,6 +17,12 @@ Every package below exports a Cordis plugin that a bundle patch can name in a Lo
 |---|---|---|
 | `@deepseek-ai/dsh-acp` | yes | Automation-only Agent Client Protocol server for driving DeepSeek Harness agents over JSON-RPC stdio |
 
+## alfredgo
+
+| Package | Config | Description |
+|---|---|---|
+| `@deepseek-ai/dsh-alfredgo-secret-guard` | yes | AlfredGo AgentSecret plugin: the agent uses the user's credentials through AgentSecret approvals while the model sees only references |
+
 ## api
 
 | Package | Config | Description |
