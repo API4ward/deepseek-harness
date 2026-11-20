@@ -11,6 +11,7 @@ import type { ContentBlock } from '@deepseek-ai/dsh-llm'
 import { renderPrompt } from '@deepseek-ai/dsh-system-prompt'
 import { defineContentToolFixture, executeToolFixture } from '@deepseek-ai/dsh-tool-testkit'
 import * as SecretGuard from '../src/index.ts'
+import { GUIDANCE } from '../src/guidance.ts'
 import type { FetchLike } from '../src/injector.ts'
 
 const SECRET = 'whoami'
@@ -139,12 +140,12 @@ it('creates a task, registers the MCP server and guidance, and revokes the task 
     name: 'secret_guard',
     entry: { transport: 'stdio', command: s.config.secretGuard, args: ['mcp', '--url', 'http://127.0.0.1:8765', '--token-file', tokenFile] },
   }])
-  expect(renderPrompt(await s.ctx.systemPrompt.assemble())).toContain(SecretGuard.GUIDANCE)
+  expect(renderPrompt(await s.ctx.systemPrompt.assemble())).toContain(GUIDANCE)
 
   await s.fiber.dispose()
   expect(s.commands[1]).toEqual(['injector', '--state', s.config.injectorState, 'revoke', 'task', 'task_1'])
   await expect(stat(tokenFile)).rejects.toThrow()
-  expect(renderPrompt(await s.ctx.systemPrompt.assemble())).not.toContain(SecretGuard.GUIDANCE)
+  expect(renderPrompt(await s.ctx.systemPrompt.assemble())).not.toContain(GUIDANCE)
 })
 
 it('passes results without credentials unchanged and without asking', async () => {

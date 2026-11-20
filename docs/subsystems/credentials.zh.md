@@ -256,6 +256,32 @@ Host service backing the generated `ctx.remote.credentials` namespace. It carrie
 
 Source: [`packages/api/settings-controller/src/credentials.ts`](../../packages/api/settings-controller/src/credentials.ts)
 
+<a id="ctxsecretapprover--secretapprovercontroller"></a>
+
+### `ctx.secretApprover` — `SecretApproverController`
+
+Forwards approver calls from the owner's browser to the AgentSecret relay.
+
+```ts cordis-catalog
+/**
+ * Read the relay origin shown in the approver setup steps.
+ * @returns the configured relay origin.
+ */
+@Remote info(): ApproverHostInfo
+
+/**
+ * Forward one approver request to the relay.
+ * @param call - relay route, JSON body text, and optional session token.
+ * @param signal - Client cancellation.
+ * @returns the relay's status and JSON body text.
+ * @throws {RemoteError} `gateway/bad-request` for another route or an oversized body;
+ * `secret-approver/relay-unreachable` when the relay does not answer with JSON.
+ */
+@Remote async relay(call: RelayCall, signal: AbortSignal): Promise<RelayReply>
+```
+
+Source: [`packages/alfredgo/alfredgo-secret-approver/src/index.ts`](../../packages/alfredgo/alfredgo-secret-approver/src/index.ts)
+
 <a id="authorization-events"></a>
 
 ### `authorization/*` events

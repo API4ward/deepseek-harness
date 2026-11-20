@@ -3305,6 +3305,26 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
     ],
   },
   {
+    key: 'secretApprover',
+    summary: 'Forwards approver calls from the owner\'s browser to the AgentSecret relay.',
+    description: 'Forwards approver calls from the owner\'s browser to the AgentSecret relay.',
+    methods: [
+      {
+        signature: '@Remote info(): ApproverHostInfo',
+        description: 'Read the relay origin shown in the approver setup steps.',
+        parameters: [],
+        returns: 'the configured relay origin.',
+      },
+      {
+        signature: '@Remote async relay(call: RelayCall, signal: AbortSignal): Promise<RelayReply>',
+        description: 'Forward one approver request to the relay.',
+        parameters: [{ name: 'call', description: 'relay route, JSON body text, and optional session token.' }, { name: 'signal', description: 'Client cancellation.' }],
+        returns: 'the relay\'s status and JSON body text.',
+        throws: ['{RemoteError} `gateway/bad-request` for another route or an oversized body; `secret-approver/relay-unreachable` when the relay does not answer with JSON.'],
+      },
+    ],
+  },
+  {
     key: 'sessionController',
     summary: 'Host service backing the generated `ctx.remote.session` namespace.',
     description: 'Host service backing the generated `ctx.remote.session` namespace.',
@@ -6487,6 +6507,10 @@ export const TYPE_API: readonly TypeApiEntry[] = [
     declaration: 'export interface ApprovalRequestEvent {\n    readonly agent: Agent;\n    readonly toolName: string;\n    readonly callId?: ToolCallId;\n    readonly reason?: string;\n    readonly displayReason?: {\n        readonly en: string;\n        readonly [locale: string]: string;\n    };\n    readonly signal?: AbortSignal;\n}',
   },
   {
+    name: 'ApproverHostInfo',
+    declaration: 'export interface ApproverHostInfo {\n    readonly relayUrl: string;\n}',
+  },
+  {
     name: 'ArchiveSessionOptions',
     declaration: 'export interface ArchiveSessionOptions {\n    readonly stopActivity?: boolean;\n}',
   },
@@ -9259,12 +9283,20 @@ export const TYPE_API: readonly TypeApiEntry[] = [
     declaration: 'export interface RegistryAttempt {\n    readonly registry: Registry;\n    readonly problem?: \'not-found\' | \'network\' | \'unknown\';\n    readonly reason?: string;\n}',
   },
   {
+    name: 'RelayCall',
+    declaration: 'export interface RelayCall {\n    readonly path: RelayPath;\n    readonly body: string;\n    readonly token?: string;\n}',
+  },
+  {
     name: 'RelayConnectivityView',
     declaration: 'export interface RelayConnectivityView {\n    readonly ok: boolean;\n    readonly httpReachable: boolean;\n    readonly blocking: boolean;\n    readonly error?: string;\n}',
   },
   {
     name: 'RelayPublishView',
     declaration: 'export interface RelayPublishView {\n    readonly ok: boolean;\n    readonly blocking: boolean;\n    readonly error?: string;\n}',
+  },
+  {
+    name: 'RelayReply',
+    declaration: 'export interface RelayReply {\n    readonly status: number;\n    readonly body: string;\n}',
   },
   {
     name: 'Reload',

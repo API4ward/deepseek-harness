@@ -25,6 +25,8 @@ This group holds plugins that belong to AlfredGo, the special edition of DeepSee
 | Package | Role | ctx key |
 |---|---|---|
 | [`alfredgo-secret-guard/`](alfredgo-secret-guard/README.md) | Connects the agent to AgentSecret: credentials in tool results become references after approval, `secret_write_file` fills references into files, and the `secret_guard` MCP server offers AgentSecret's own operations | registers on `ctx.tools`, `ctx.systemPrompt`, and `ctx.mcpManager` |
+| [`alfredgo-secret-approver/`](alfredgo-secret-approver/README.md) | Forwards the client approver's calls to the AgentSecret relay | provides the Remote namespace `secretApprover` |
+| [`alfredgo-client-secret-approver/`](alfredgo-client-secret-approver/README.md) | Makes the DHS client an AgentSecret approver: device keys, encrypted credentials, injector pairing, and approval cards | registers on the client `settings.section` and `shell.overlay` slots |
 
 -----
 

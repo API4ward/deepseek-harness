@@ -25,6 +25,8 @@ kind: "package-group"
 | 包 | 作用 | ctx 键 |
 |---|---|---|
 | [`alfredgo-secret-guard/`](alfredgo-secret-guard/README.zh.md) | 把 agent 接入 AgentSecret：工具结果中的凭据经批准后变成引用，`secret_write_file` 把引用填入文件，`secret_guard` MCP server 提供 AgentSecret 自己的操作 | 注册到 `ctx.tools`、`ctx.systemPrompt` 和 `ctx.mcpManager` |
+| [`alfredgo-secret-approver/`](alfredgo-secret-approver/README.zh.md) | 把客户端审批端的调用转发到 AgentSecret relay | 提供 Remote 命名空间 `secretApprover` |
+| [`alfredgo-client-secret-approver/`](alfredgo-client-secret-approver/README.zh.md) | 让 DHS 客户端成为 AgentSecret 审批端：设备密钥、加密保存的密码、注入工具配对和审批卡片 | 注册到客户端 `settings.section` 和 `shell.overlay` 插槽 |
 
 -----
 

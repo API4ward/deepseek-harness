@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Credential approvals",
+    "description": "Keep your credentials in DHS and approve each use by the agent through AgentSecret."
+  }
+}

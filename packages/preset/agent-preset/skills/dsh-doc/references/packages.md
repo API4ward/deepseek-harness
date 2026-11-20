@@ -21,6 +21,8 @@ Every package below exports a Cordis plugin that a bundle patch can name in a Lo
 
 | Package | Config | Description |
 |---|---|---|
+| `@deepseek-ai/dsh-alfredgo-client-secret-approver` | no | AlfredGo credential approver in the DHS client: device keys, encrypted credentials, injector pairing, and approval cards for AgentSecret |
+| `@deepseek-ai/dsh-alfredgo-secret-approver` | yes | AlfredGo approver forwarder: relays the browser approver calls to an AgentSecret relay |
 | `@deepseek-ai/dsh-alfredgo-secret-guard` | yes | AlfredGo AgentSecret plugin: the agent uses the user's credentials through AgentSecret approvals while the model sees only references |
 
 ## api

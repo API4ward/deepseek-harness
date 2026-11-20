@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Пересылка в relay AgentSecret",
+    "description": "Пересылает подтверждение учётных данных из клиента в relay AgentSecret."
+  }
+}

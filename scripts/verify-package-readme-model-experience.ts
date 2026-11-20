@@ -50,6 +50,8 @@ const NO_MODEL_EXPERIENCE_SECTION: Readonly<Record<string, string>> = {
  * blocks. A package moves on or off this list with its context behavior.
  */
 const SENTENCE_MODEL_EXPERIENCE: Readonly<Record<string, SentenceContract>> = {
+  'packages/alfredgo/alfredgo-client-secret-approver': { kind: 'none', reason: 'The browser approver signs decisions and adds no model input.' },
+  'packages/alfredgo/alfredgo-secret-approver': { kind: 'none', reason: 'The Host forwarder serves the browser approver and adds no model input.' },
   'packages/client/config': { kind: 'none', reason: 'Browser configuration types register nothing and add no model input.' },
   'packages/client/script-realm': { kind: 'none', reason: 'Optional browser execution-provider registration contributes no model input.' },
   'packages/client/script-realm-iframe': { kind: 'none', reason: 'Same-origin browser script environments contribute no model input.' },

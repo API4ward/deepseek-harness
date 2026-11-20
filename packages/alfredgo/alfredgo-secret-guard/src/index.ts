@@ -27,20 +27,13 @@ import type { FetchLike } from './injector.ts'
 import { releaseContent } from './reveal.ts'
 import { protectedLocations, protectReason } from './protect.ts'
 import { applyWriteTool, WRITE_TOOL } from './write-tool.ts'
+import { GUIDANCE, SERVER_NAME } from './guidance.ts'
 
 export const name = 'alfredgo-secret-guard'
 // The MCP server is registered while an MCP manager runs; profiles without one keep the other handling.
 export const inject = ['tools', 'fs', 'systemPrompt']
 
-/** MCP server name; fixes the `mcp__secret_guard__` tool namespace. */
-export const SERVER_NAME = 'secret_guard'
 const SERVER_TOOL_PREFIX = `mcp__${SERVER_NAME}__`
-
-/** Model-visible guidance while the plugin is loaded. */
-export const GUIDANCE = 'The user\'s credentials are managed by AgentSecret, and the user approves each use on their approver. '
-  + 'Text that held a credential reaches you with `{{secretref:<alias>}}` in its place. '
-  + 'To put a credential into a file, call `secret_write_file` with the reference in `content`; the file receives the real value after approval. '
-  + 'Use the `mcp__secret_guard__*` tools for operations AgentSecret performs itself. Never ask the user to paste a credential into the conversation.'
 
 /** AgentSecret commands, injector address, and task settings. */
 export interface Config {

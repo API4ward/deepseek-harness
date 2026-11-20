@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Relais vers AgentSecret",
+    "description": "Transmet l’approbateur d’identifiants du client à un relay AgentSecret."
+  }
+}

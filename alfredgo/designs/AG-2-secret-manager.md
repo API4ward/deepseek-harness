@@ -47,7 +47,31 @@ DHS 的 `dsh-hooks-claude-code` 不支持 `updatedToolOutput`，并把 `updatedI
 4. 注入工具未运行时，AlfredGo 启动报出明确原因。
 5. 退出后 task 被撤销。
 
+## 设计 v3：审批端做成 DHS 原生插件（2026-11-21，Jian 决定）
+
+Jian 澄清：AG-2 的主体是把 AgentSecret 的**审批端**做进 DHS，成为 DHS 的一部分；注入工具、MCP（上面的 `alfredgo-secret-guard`）是 DHS 的可选插件。Jian 在卡片上选了“DHS 原生审批插件”，替代 G2 中“首期嵌入审批页”的做法。
+
+### 部件
+
+| 包 | 位置 | 作用 |
+|:--|:--|:--|
+| `alfredgo-secret-approver`（Host） | DHS Host 进程 | Remote 服务 `secretApprover`：把审批端的请求转发给 relay（`/device/challenge`、`/device/login`、`/approver/rules`、`/approver/pending`、`/approver/decision`），只允许这五个路径。relay 校验 `Host`/`Origin` 且没有 CORS，浏览器不能直连，所以由 Host 转发；转发的内容只有签名、公钥和密封包，没有明文。配置 `relayUrl`。 |
+| `alfredgo-client-secret-approver`（Client） | DHS Web/桌面客户端（浏览器） | 移植 AgentSecret `web/approver.js`：设备密钥（WebCrypto，不可导出）、密码库（AES-GCM 加密后存 IndexedDB）、配对注入工具、编译并下发匹配器、检查与签名决定、密封给注入工具、全部同意/自动规则/允许 n 次。设置页一节“密码审批”管理设备、密码、注入工具和审批模式；客户端开着时每 2 秒取一次待审批请求，以浮层卡片显示（拒绝、允许 1 次、其他；fill 可选副本、mock、手动输入）。 |
+| `alfredgo-secret-approver-bundle` | 插件页 | 组合上面两个包，用 `cordis.patch.yml` 一键启用。 |
+| `alfredgo-secret-guard`（已有，PR #2） | Host | 可选：reveal、`secret_write_file`、MCP。与审批端互不依赖。 |
+
+### 不变的约束
+
+- 明文只在浏览器里：DHS Host、relay、注入工具都看不到审批端保存的密码。浏览器存储丢失则密码丢失（与 AgentSecret 浏览器版相同，没有备份）。
+- 协议与 AgentSecret 浏览器审批端逐字节一致（签名前缀 `secret-guard/request/v1:`、`secret-guard/decision/v3:`、`secret-guard/rules/v1:`，密封 `secret-guard/seal/v1`），不改 AgentSecret。
+- relay 首期继续用 AgentSecret 的 Python relay。
+
+### 测试
+
+- Host：转发只放行五个路径、带正确 `Host` 且不带 `Origin`、拒绝重定向。
+- Client：WebCrypto 部分用 Node 的 WebCrypto 跑单元测试（签名、密封、匹配器与 AgentSecret Python 实现互通：用 AgentSecret 的 `seal.py` 解封、`matcher.py` 校验）。
+- 联调：DHS 审批端 + 真实 relay 和注入工具，跑 reveal 与 `secret_write_file`，审批卡片出现在 DHS 里。
+
 ## 后续
 
-- 第二个 PR：AlfredGo 客户端的审批面板（嵌入 AgentSecret 浏览器审批页）。
-- 二期：原生审批卡片、网站登录（浏览器工具 fill）。
+- 二期：审批卡片进入会话流、网站登录（浏览器工具 fill）、自建 relay。
