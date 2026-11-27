@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "認証情報の承認",
+    "description": "認証情報を DHS に保存し、agent による AgentSecret 経由の使用を毎回承認します。"
+  }
+}

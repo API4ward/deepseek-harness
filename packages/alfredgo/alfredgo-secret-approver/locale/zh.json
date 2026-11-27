@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "AgentSecret relay 转发",
+    "description": "把客户端里的密码审批端转发到 AgentSecret relay。"
+  }
+}

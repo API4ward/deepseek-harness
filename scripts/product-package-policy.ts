@@ -16,6 +16,9 @@ export interface ProductPackagePolicy {
  * Optional integrations may be reached by an optional bundle without becoming default capabilities.
  */
 export const PRODUCT_PACKAGE_POLICY: Readonly<Record<string, ProductPackagePolicy>> = {
+  'packages/alfredgo/alfredgo-secret-guard': { category: 'optional', reason: 'AlfredGo overlay plugin that requires a separately installed AgentSecret injector.' },
+  'packages/alfredgo/alfredgo-secret-approver': { category: 'optional', reason: 'AlfredGo overlay plugin that requires a separately run AgentSecret relay.' },
+  'packages/alfredgo/alfredgo-client-secret-approver': { category: 'optional', reason: 'AlfredGo overlay Client plugin selected together with the AgentSecret relay forwarder.' },
   'packages/session-query/tool-session-list': { category: 'optional', reason: 'Explicitly grants model callers read access to runtime Workspace and Session metadata.' },
   'packages/host/authentication-desktop': { category: 'optional', reason: 'Mounted by the private Desktop Host with its parent-process credential, outside default Web profiles.' },
   'packages/core/agent-tool-presentation': { category: 'optional', reason: 'Deprecated selector retained for existing executor configurations.' },

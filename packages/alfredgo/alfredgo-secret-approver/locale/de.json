@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "AgentSecret-Relay-Weiterleitung",
+    "description": "Leitet den Zugangsdaten-Freigeber im Client an ein AgentSecret-Relay weiter."
+  }
+}

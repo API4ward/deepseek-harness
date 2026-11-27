@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "AgentSecret-Zugangsdaten",
+    "description": "Lässt den Agenten Ihre Zugangsdaten über AgentSecret-Freigaben nutzen, während das Modell nur Verweise sieht."
+  }
+}

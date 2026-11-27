@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "AgentSecret の認証情報",
+    "description": "AgentSecret の承認を通じてエージェントに認証情報を使わせ、モデルには参照だけを見せます。"
+  }
+}
