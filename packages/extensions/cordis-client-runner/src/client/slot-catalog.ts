@@ -3330,6 +3330,7 @@ export const CLIENT_SLOT_API: readonly ClientSlotEntry[] = [
     slotInject: '',
     declaredBy: 'an entry in \'root\' (client-ui-layout), so it exists while that entry is mounted',
     occupants: [
+      'alfredgo-client-agent-group GroupPage',
       'client-ui-conversation ConversationPanel key \'conversation\'',
       'client-ui-plugin-manager PluginManagerPage',
       'client-ui-schedule TaskManagerPage',
@@ -4988,6 +4989,7 @@ export const CLIENT_SLOT_API: readonly ClientSlotEntry[] = [
     slotInject: '',
     declaredBy: 'factory \'sidebar.panel.icon\' (client-ui-sidebar), so it exists while that definition is registered',
     occupants: [
+      'alfredgo-client-agent-group GroupIcon',
       'client-ui-plugin-manager PluginsPanelIcon',
       'client-ui-schedule TaskManagerIcon',
       'experimental-client-ui-forge ReviewNavIcon',
@@ -5932,6 +5934,7 @@ export const CLIENT_SLOT_API: readonly ClientSlotEntry[] = [
     slotInject: '',
     declaredBy: 'an entry in \'sidebar.workspaces\' (client-ui-workspace), so it exists while that entry is mounted',
     occupants: [
+      'alfredgo-client-agent-group SessionGroupMark id \'alfredgo-agent-group-mark\'',
       'client-ui-schedule SessionScheduleMark id \'schedule-mark\'',
       'experimental-liveshare ViewerForkMarker id \'liveshare.fork\'',
     ],

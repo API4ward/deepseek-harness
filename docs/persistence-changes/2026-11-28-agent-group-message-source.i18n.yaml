@@ -1,0 +1,28 @@
+# Bilingual-pair consistency record for 2026-11-28-agent-group-message-source.md (docs/i18n/README.md): per heading
+# section, a hash of its English and Chinese blocks outside code blocks and generated regions.
+# After editing either side, bring the other along and re-record with:
+#   pnpm run verify-translation-pairing --write docs/persistence-changes/2026-11-28-agent-group-message-source.md
+/:
+  en: 3d5a424ae7d7e46b
+  zh: c22a8e4a62d8cc1a
+/2026-11-28-agent-group-message-source:
+  en: a20427cee7363c4e
+  zh: 4ca10bdb9f94295c
+/2026-11-28-agent-group-message-source/summary:
+  en: 080214dd925e2f11
+  zh: 6ee206aa0671980b
+/2026-11-28-agent-group-message-source/table-of-contents:
+  en: 6cf314a069ceb451
+  zh: 9adff678e9ecab3b
+/2026-11-28-agent-group-message-source/declaration:
+  en: 6907136f28e48c90
+  zh: 02f8298485f3d8e7
+/2026-11-28-agent-group-message-source/compatibility:
+  en: 9498720ef8db7b3c
+  zh: 34a4af2005bd1355
+/2026-11-28-agent-group-message-source/verification:
+  en: 271cd5ca825f3759
+  zh: db283f3d6bf5c212
+/2026-11-28-agent-group-message-source/dev-note:
+  en: b75c8458928b72b9
+  zh: 003ba4e17b4b5269

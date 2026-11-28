@@ -1,0 +1,61 @@
+# Bilingual-pair consistency record for README.md (docs/i18n/README.md): per heading
+# section, a hash of its English and Chinese blocks outside code blocks and generated regions.
+# After editing either side, bring the other along and re-record with:
+#   pnpm run verify-translation-pairing --write packages/alfredgo/alfredgo-tool-agent-group/README.md
+/:
+  en: 826498b5bb698072
+  zh: 3eef919074a36eff
+/deepseek-ai-dsh-alfredgo-tool-agent-group:
+  en: d44a1567908e922c
+  zh: 6800f90b3f01e853
+/deepseek-ai-dsh-alfredgo-tool-agent-group/summary:
+  en: 8533b7887cab8ec9
+  zh: a93d6d671109856d
+/deepseek-ai-dsh-alfredgo-tool-agent-group/table-of-contents:
+  en: d152484eb41ac6b4
+  zh: cf666e604d5d044e
+/deepseek-ai-dsh-alfredgo-tool-agent-group/use-this-package:
+  en: cacd4a99a4caf648
+  zh: 0c0ae98bb1dad9ce
+/deepseek-ai-dsh-alfredgo-tool-agent-group/understand-the-implementation:
+  en: 1666a04c6b4b3bea
+  zh: 9e5b7fffbe2054c8
+/deepseek-ai-dsh-alfredgo-tool-agent-group/further-exploration:
+  en: cc9f110ec0c80412
+  zh: b5ee0287cd9dcc50
+/deepseek-ai-dsh-alfredgo-tool-agent-group/model-experience:
+  en: 215e7ba838619b7b
+  zh: a311da3843709f90
+/deepseek-ai-dsh-alfredgo-tool-agent-group/model-experience/group-guidance:
+  en: d5047d78a3ddacdb
+  zh: 2904cb86aac2fb66
+/deepseek-ai-dsh-alfredgo-tool-agent-group/model-experience/group-guidance/what-the-model-sees:
+  en: 7dee62782d1aabe4
+  zh: 58931f55ff54c329
+/deepseek-ai-dsh-alfredgo-tool-agent-group/model-experience/group-guidance/what-the-model-sees/guidance-text:
+  en: 8f57292f6821da96
+  zh: 47d2980dbe668c0b
+/deepseek-ai-dsh-alfredgo-tool-agent-group/model-experience/group-guidance/token-effect:
+  en: 52b620f5dee8e39b
+  zh: 6078d21cba8d908d
+/deepseek-ai-dsh-alfredgo-tool-agent-group/model-experience/group-guidance/kv-cache-effect:
+  en: 3a7983e962f9f0fe
+  zh: bbbab704fba6bd9e
+/deepseek-ai-dsh-alfredgo-tool-agent-group/model-experience/the-group-tools:
+  en: c19fc2cbcb01adb3
+  zh: bd59f08be303a012
+/deepseek-ai-dsh-alfredgo-tool-agent-group/model-experience/the-group-tools/what-the-model-sees:
+  en: 81e24bf0293b7564
+  zh: 3713012f9f16b94c
+/deepseek-ai-dsh-alfredgo-tool-agent-group/model-experience/the-group-tools/token-effect:
+  en: b75c2fe39279ea99
+  zh: 738b3213d7694fe4
+/deepseek-ai-dsh-alfredgo-tool-agent-group/model-experience/the-group-tools/kv-cache-effect:
+  en: d93607e594f287c6
+  zh: 8f193f70850dd4d9
+/deepseek-ai-dsh-alfredgo-tool-agent-group/known-limitations-and-deferred-work:
+  en: 86ad453c0101195a
+  zh: 000b49f3fab4d0be
+/deepseek-ai-dsh-alfredgo-tool-agent-group/known-limitations-and-deferred-work/dev-note:
+  en: 7c7e7d8e81ab716f
+  zh: 9cea972e027fd972
