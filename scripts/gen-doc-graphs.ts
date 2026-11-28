@@ -131,6 +131,15 @@ const SERVICE_ROLES: ServiceRole[] = [
     consumers: ['alfredgo-client-secret-approver'],
     note: 'Forwards the browser approver\'s allowlisted calls to the configured AgentSecret relay; bodies hold only signed texts and sealed boxes.',
   },
+  // ALFREDGO: AG-3 agent groups, see alfredgo/PATCHES.md.
+  {
+    key: 'agentGroups',
+    pkg: 'alfredgo-agent-group',
+    title: 'AlfredGo agent groups',
+    mode: 'service',
+    consumers: ['alfredgo-tool-agent-group', 'alfredgo-client-agent-group'],
+    note: 'Keeps groups of long-lived agents joined by an acyclic graph of reporting lines, and delivers assignments and reports between member Sessions.',
+  },
   {
     key: 'deepseekChatImport',
     pkg: 'deepseek-chat-import',

@@ -19,6 +19,10 @@ flowchart LR
   pkg_alfredgo_secret_approver["alfredgo-secret-approver"]
   svc_secretApprover["ctx.secretApprover<br/>AlfredGo AgentSecret relay forwarder"]
   pkg_alfredgo_client_secret_approver["alfredgo-client-secret-approver"]
+  pkg_alfredgo_agent_group["alfredgo-agent-group"]
+  svc_agentGroups["ctx.agentGroups<br/>AlfredGo agent groups"]
+  pkg_alfredgo_tool_agent_group["alfredgo-tool-agent-group"]
+  pkg_alfredgo_client_agent_group["alfredgo-client-agent-group"]
   pkg_deepseek_chat_import["deepseek-chat-import"]
   svc_deepseekChatImport["ctx.deepseekChatImport<br/>DeepSeek chat export import"]
   pkg_headless["headless"]
@@ -349,6 +353,7 @@ flowchart LR
   pkg_agent_loop --> svc_agentLoop
   pkg_agent_preset_registry --> svc_agentPresets
   pkg_agent_team --> svc_agentTeams
+  pkg_alfredgo_agent_group --> svc_agentGroups
   pkg_alfredgo_secret_approver --> svc_secretApprover
   pkg_api_gateway --> svc_typertGateway
   pkg_api_job_controller --> svc_jobController
@@ -528,6 +533,8 @@ flowchart LR
   svc_actionCards --> pkg_creation_recommendations
   svc_agentDefaultModel --> pkg_api_session_controller
   svc_agentDefaultModel --> pkg_headless
+  svc_agentGroups --> pkg_alfredgo_client_agent_group
+  svc_agentGroups --> pkg_alfredgo_tool_agent_group
   svc_agentLoop --> pkg_base
   svc_agentLoop --> pkg_sdk_minimal
   svc_agentTeams --> pkg_tool_agent_team
@@ -713,6 +720,7 @@ flowchart LR
 | `ctx.actionCards` | `service` | [`action-cards`](../packages/experimental/action-cards) | - | [`creation-recommendations`](../packages/experimental/creation-recommendations), [`client-ui-action-cards`](../packages/experimental/client-ui-action-cards) | - | 负责卡片状态、用户操作和状态通知；各卡片种类注册自己的动作和处理器。 |
 | `ctx.pluginRecommendations` | `service` | [`plugin-recommendations`](../packages/experimental/plugin-recommendations) | - | [`client-ui-plugin-recommendations`](../packages/experimental/client-ui-plugin-recommendations) | - | 读取官方插件卡片的当前目录文本，并在用户点击后通过配置插件管理器启用该插件。 |
 | `ctx.secretApprover` | `service` | [`alfredgo-secret-approver`](../packages/alfredgo/alfredgo-secret-approver) | - | [`alfredgo-client-secret-approver`](../packages/alfredgo/alfredgo-client-secret-approver) | - | 把浏览器审批端白名单内的调用转发到配置的 AgentSecret relay；请求和响应只含签名文本和密封数据。 |
+| `ctx.agentGroups` | `service` | [`alfredgo-agent-group`](../packages/alfredgo/alfredgo-agent-group) | - | [`alfredgo-tool-agent-group`](../packages/alfredgo/alfredgo-tool-agent-group), [`alfredgo-client-agent-group`](../packages/alfredgo/alfredgo-client-agent-group) | - | 保存由无环隶属关系图连接的长期 agent 组群，并在成员会话之间投递分派和汇报。 |
 | `ctx.deepseekChatImport` | `service` | [`deepseek-chat-import`](../packages/experimental/deepseek-chat-import) | - | - | - | 提供仅 owner 可用的上传路由，把 DeepSeek 会话导出的每个对话导入为一个会话，并提供浏览器先行检查的上传上限。 |
 | `ctx.headlessStartup` | `core` | [`headless`](../packages/bundle/headless) | - | [`headless`](../packages/bundle/headless) | - | 将解析后的任务和运行选项提供给无界面运行器及其 sandbox-policy 配置。 |
 | `ctx.cotTranslation` | `service` | [`experimental-client-ui-cot-translation`](../packages/experimental/client-ui-cot-translation) | - | - | - | 为展开的思考内容提供有界的 Session 翻译请求，不改变模型可见历史。 |

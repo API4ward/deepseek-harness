@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Groupes d’agents",
+    "description": "Organise des agents persistants en groupe avec des liens hiérarchiques : les supérieurs attribuent des tâches et les subordonnés rendent compte."
+  }
+}

@@ -124,6 +124,227 @@ interface TeamProjection {
 
 Generated from source by `scripts/gen-cordis-catalog.ts` (verified fresh by `pnpm run verify-cordis-catalog` in doc-sync; regenerate with `pnpm run gen-cordis-catalog`) — the language sides differ only in locale-specific paired document paths. Signature blocks use a `ts cordis-catalog` fence and keep the original source JSDoc; dispatch modes are defined in the [primer](../cordis-primer.zh.md#dispatch-modes), and the framework-inherited `ctx` API lives in [cordis-api/inherited.md](../cordis-api/inherited.md).
 
+<a id="ctxagentgroups--agentgroupservice"></a>
+
+### `ctx.agentGroups` — `AgentGroupService`
+
+Durable groups and the delivery of assignments and reports between members. Management reads and writes never activate a Session; assigning, reporting, and joining or leaving with an existing Session do.
+
+```ts cordis-catalog
+/**
+ * Read every group and retained assignment.
+ * @returns groups by creation time and assignments newest first.
+ */
+@Remote async snapshot(): Promise<AgentGroupSnapshot>
+
+/**
+ * Follow every group and retained assignment.
+ * @param signal - cancellation owned by the Remote stream carrier.
+ * @returns the current snapshot, then one snapshot after each change.
+ */
+@Remote({ mode: 'stream' }) async *watch(signal: AbortSignal): AsyncIterable<AgentGroupSnapshot>
+
+/**
+ * Find the group membership of one Session without activating it.
+ * @param sessionId - Session to look up.
+ * @returns the group and member whose resident Session it is, or `undefined`.
+ */
+async membershipOf(sessionId: SessionId): Promise<AgentGroupMembership | undefined>
+
+/**
+ * Whether a Session is a group member, read synchronously from loaded state.
+ * @param sessionId - Session to look up.
+ * @returns `false` until storage has loaded.
+ */
+isMember(sessionId: SessionId): boolean
+
+/**
+ * Describe a member's own position: its group, superiors, subordinates, and open assignments.
+ * @param sessionId - the calling member's Session.
+ * @returns the member's current view.
+ * @throws {AgentGroupError} `not-a-member` when the Session belongs to no group.
+ */
+async memberView(sessionId: SessionId): Promise<AgentGroupMemberView>
+
+/**
+ * Create an empty group.
+ * @param request - title, description, and working directory of created member Sessions.
+ * @returns the stored group.
+ */
+@Remote('createGroup') remoteCreate(request: AgentGroupCreateRequest): Promise<AgentGroup>
+
+/**
+ * Create an empty group.
+ * @param request - title, description, and working directory of created member Sessions.
+ * @returns the stored group.
+ * @throws {AgentGroupError} `invalid-input` for an empty or overlong title.
+ */
+create(request: AgentGroupCreateRequest): Promise<AgentGroup>
+
+/**
+ * Change a group's title, description, or working directory.
+ * @param request - group and its changed fields.
+ * @returns the stored group.
+ */
+@Remote('updateGroup') remoteUpdate(request: AgentGroupUpdateRequest): Promise<AgentGroup>
+
+/**
+ * Change a group's title, description, or working directory.
+ * @param request - group and its changed fields; an empty `cwd` clears it.
+ * @returns the stored group.
+ * @throws {AgentGroupError} `group-not-found` or `invalid-input`.
+ */
+update(request: AgentGroupUpdateRequest): Promise<AgentGroup>
+
+/**
+ * Delete a group and its assignments. Member Sessions remain as ordinary Sessions.
+ * @param request - group to delete.
+ */
+@Remote('removeGroup') remoteRemove(request: AgentGroupRef): Promise<void>
+
+/**
+ * Delete a group and its assignments. Member Sessions remain as ordinary Sessions.
+ * @param request - group to delete.
+ * @throws {AgentGroupError} `group-not-found`.
+ */
+async remove(request: AgentGroupRef): Promise<void>
+
+/**
+ * Add a member whose Session is created on first use.
+ * @param request - group, member name, role, and optional preset.
+ * @returns the stored group.
+ */
+@Remote('addMember') remoteAddMember(request: AgentGroupAddMemberRequest): Promise<AgentGroup>
+
+/**
+ * Add a member whose Session is created on first use.
+ * @param request - group, member name, role, and optional preset.
+ * @returns the stored group.
+ * @throws {AgentGroupError} `group-not-found`, `invalid-input`, `name-in-use`, or `limit`.
+ */
+addMember(request: AgentGroupAddMemberRequest): Promise<AgentGroup>
+
+/**
+ * Add an existing Session as a member. The Session keeps its history, directory, and preset.
+ * @param request - group, Session, member name, and role.
+ * @param signal - cancellation of the stored Session header read.
+ * @returns the stored group.
+ */
+@Remote('attachSession') remoteAttachSession(request: AgentGroupAttachRequest, signal?: AbortSignal): Promise<AgentGroup>
+
+/**
+ * Add an existing Session as a member. The Session keeps its history, directory, and preset.
+ * @param request - group, Session, member name, and role.
+ * @param signal - cancellation of the stored Session header read.
+ * @returns the stored group.
+ * @throws {AgentGroupError} `session-unavailable` for a missing, archived, or subagent Session;
+ * `session-in-use` when the Session already is a member of a group.
+ */
+async attachSession(request: AgentGroupAttachRequest, signal?: AbortSignal): Promise<AgentGroup>
+
+/**
+ * Rename a member, change its role, or change the preset of a member whose Session does not exist yet.
+ * @param request - member and its changed fields.
+ * @returns the stored group.
+ */
+@Remote('updateMember') remoteUpdateMember(request: AgentGroupUpdateMemberRequest): Promise<AgentGroup>
+
+/**
+ * Rename a member, change its role, or change the preset of a member whose Session does not exist yet.
+ * @param request - member and its changed fields; an empty `agentPreset` selects the Host default.
+ * @returns the stored group.
+ * @throws {AgentGroupError} `group-not-found`, `member-not-found`, `invalid-input`, or `name-in-use`.
+ */
+updateMember(request: AgentGroupUpdateMemberRequest): Promise<AgentGroup>
+
+/**
+ * Remove a member, its reporting lines, and its assignments. Its Session remains as an ordinary Session.
+ * @param request - member to remove.
+ * @returns the stored group.
+ */
+@Remote('removeMember') remoteRemoveMember(request: AgentGroupMemberRef): Promise<AgentGroup>
+
+/**
+ * Remove a member, its reporting lines, and its assignments. Its Session remains as an ordinary Session.
+ * @param request - member to remove.
+ * @returns the stored group.
+ * @throws {AgentGroupError} `group-not-found` or `member-not-found`.
+ */
+async removeMember(request: AgentGroupMemberRef): Promise<AgentGroup>
+
+/**
+ * Give a member a new empty resident Session; the previous Session remains as an ordinary Session.
+ * Assignments the member received and has not reported are removed, because the new Session never saw them.
+ * @param request - member to reset.
+ * @returns the stored group.
+ */
+@Remote('resetMemberSession') remoteResetMemberSession(request: AgentGroupMemberRef): Promise<AgentGroup>
+
+/**
+ * Give a member a new empty resident Session; the previous Session remains as an ordinary Session.
+ * Assignments the member received and has not reported are removed, because the new Session never saw them.
+ * @param request - member to reset.
+ * @returns the stored group.
+ * @throws {AgentGroupError} `group-not-found` or `member-not-found`.
+ */
+async resetMemberSession(request: AgentGroupMemberRef): Promise<AgentGroup>
+
+/**
+ * Resolve a member's Session for the user to open, creating the Session of a `created` member on first use.
+ * @param request - member whose conversation the user opens.
+ * @returns the member's Session id.
+ */
+@Remote('openMember') remoteOpenMember(request: AgentGroupMemberRef): Promise<{ readonly sessionId: SessionId }>
+
+/**
+ * Resolve a member's Session for the user to open, creating the Session of a `created` member on first use.
+ * @param request - member whose conversation the user opens.
+ * @returns the member's Session id.
+ * @throws {AgentGroupError} `group-not-found`, `member-not-found`, or `delivery-failed` when the Session cannot be activated.
+ */
+openMember(request: AgentGroupMemberRef): Promise<{ readonly sessionId: SessionId }>
+
+/**
+ * Replace a group's reporting lines.
+ * @param request - group, complete line set, and the revision the editor read.
+ * @returns the stored group.
+ */
+@Remote('setEdges') remoteSetEdges(request: AgentGroupSetEdgesRequest): Promise<AgentGroup>
+
+/**
+ * Replace a group's reporting lines.
+ * @param request - group, complete line set, and the revision the editor read.
+ * @returns the stored group.
+ * @throws {AgentGroupError} `conflict` when the group changed since `expectedRevision`; `member-not-found` for a
+ * line naming no member; `invalid-input` for a member reporting to itself; `cycle` with the member names along it.
+ */
+setEdges(request: AgentGroupSetEdgesRequest): Promise<AgentGroup>
+
+/**
+ * Assign a task to one direct subordinate of the calling member and deliver it to that member's Session.
+ * @param sessionId - the calling member's Session.
+ * @param to - name of a direct subordinate.
+ * @param task - complete task text.
+ * @returns the open assignment, after the subordinate's Session persisted the message.
+ * @throws {AgentGroupError} `not-a-member`, `not-a-subordinate`, `invalid-input`, `limit`, or `delivery-failed`.
+ */
+assign(sessionId: SessionId, to: string, task: string): Promise<AgentGroupAssignment>
+
+/**
+ * Report on an open assignment to the superior that gave it and deliver the report to that member's Session.
+ * @param sessionId - the calling member's Session.
+ * @param report - complete report text.
+ * @param assignmentId - assignment reported on; required when the caller holds more than one open assignment.
+ * @returns the reported assignment, after the superior's Session persisted the message.
+ * @throws {AgentGroupError} `not-a-member`, `assignment-not-found`, `invalid-input`, or `delivery-failed`.
+ */
+report(sessionId: SessionId, report: string, assignmentId?: AgentGroupAssignmentId): Promise<AgentGroupAssignment>
+```
+
+Types: [SessionId](core.zh.md)
+
+Source: [`packages/alfredgo/alfredgo-agent-group/src/index.ts`](../../packages/alfredgo/alfredgo-agent-group/src/index.ts)
+
 <a id="ctxagentteams--teamservice"></a>
 
 ### `ctx.agentTeams` — `TeamService`

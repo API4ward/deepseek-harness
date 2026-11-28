@@ -203,6 +203,27 @@ export interface Config {
 ```
 <!-- END GENERATED config-catalog:@deepseek-ai/dsh-agent-tool-presentation -->
 
+<!-- BEGIN GENERATED config-catalog:@deepseek-ai/dsh-alfredgo-agent-group -->
+<a id="deepseek-aidsh-alfredgo-agent-group"></a>
+
+## `@deepseek-ai/dsh-alfredgo-agent-group`
+
+- `inject`: `agents` · `sessions` · `storageDomain` · `sessionPersistence`
+- `source`: [`packages/alfredgo/alfredgo-agent-group/src/index.ts:70`](../packages/alfredgo/alfredgo-agent-group/src/index.ts)
+
+```ts config-catalog
+/** Plugin configuration. */
+export interface Config {
+  /** Most members one group accepts. */
+  maxMembersPerGroup: number
+  /** Most unreported assignments one member may hold; a further assignment is refused. */
+  maxOpenAssignmentsPerMember: number
+  /** Reported assignments retained per group for the activity list; the oldest are removed first. */
+  assignmentHistoryRecords: number
+}
+```
+<!-- END GENERATED config-catalog:@deepseek-ai/dsh-alfredgo-agent-group -->
+
 <!-- BEGIN GENERATED config-catalog:@deepseek-ai/dsh-alfredgo-secret-approver -->
 <a id="deepseek-aidsh-alfredgo-secret-approver"></a>
 
@@ -5448,7 +5469,9 @@ export interface Config {
 | `@deepseek-ai/dsh-acp-app` | `cmdlineArgs` | [`packages/bundle/acp-app/src/index.ts`](../packages/bundle/acp-app/src/index.ts) |
 | `@deepseek-ai/dsh-action-cards` | `agents` · `sessionProjections` · `remoteAccess` | [`packages/experimental/action-cards/src/index.ts`](../packages/experimental/action-cards/src/index.ts) |
 | `@deepseek-ai/dsh-agent` | `sessionProjections` | [`packages/core/agent/src/index.ts`](../packages/core/agent/src/index.ts) |
+| `@deepseek-ai/dsh-alfredgo-client-agent-group` | — | [`packages/alfredgo/alfredgo-client-agent-group/src/index.ts`](../packages/alfredgo/alfredgo-client-agent-group/src/index.ts) |
 | `@deepseek-ai/dsh-alfredgo-client-secret-approver` | — | [`packages/alfredgo/alfredgo-client-secret-approver/src/index.ts`](../packages/alfredgo/alfredgo-client-secret-approver/src/index.ts) |
+| `@deepseek-ai/dsh-alfredgo-tool-agent-group` | `agentGroups` · `tools` · `systemPrompt` | [`packages/alfredgo/alfredgo-tool-agent-group/src/index.ts`](../packages/alfredgo/alfredgo-tool-agent-group/src/index.ts) |
 | `@deepseek-ai/dsh-api-remote-access` | — | [`packages/api/remote-access/src/index.ts`](../packages/api/remote-access/src/index.ts) |
 | `@deepseek-ai/dsh-api-remotes` | `typertGateway` | [`packages/api/remotes/src/index.ts`](../packages/api/remotes/src/index.ts) |
 | `@deepseek-ai/dsh-authorization` | `credentials` | [`packages/credentials/authorization/src/index.ts`](../packages/credentials/authorization/src/index.ts) |

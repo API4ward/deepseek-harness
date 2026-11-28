@@ -17,6 +17,10 @@ flowchart LR
   pkg_alfredgo_secret_approver["alfredgo-secret-approver"]
   svc_secretApprover["ctx.secretApprover<br/>AlfredGo AgentSecret relay forwarder"]
   pkg_alfredgo_client_secret_approver["alfredgo-client-secret-approver"]
+  pkg_alfredgo_agent_group["alfredgo-agent-group"]
+  svc_agentGroups["ctx.agentGroups<br/>AlfredGo agent groups"]
+  pkg_alfredgo_tool_agent_group["alfredgo-tool-agent-group"]
+  pkg_alfredgo_client_agent_group["alfredgo-client-agent-group"]
   pkg_deepseek_chat_import["deepseek-chat-import"]
   svc_deepseekChatImport["ctx.deepseekChatImport<br/>DeepSeek chat export import"]
   pkg_headless["headless"]
@@ -347,6 +351,7 @@ flowchart LR
   pkg_agent_loop --> svc_agentLoop
   pkg_agent_preset_registry --> svc_agentPresets
   pkg_agent_team --> svc_agentTeams
+  pkg_alfredgo_agent_group --> svc_agentGroups
   pkg_alfredgo_secret_approver --> svc_secretApprover
   pkg_api_gateway --> svc_typertGateway
   pkg_api_job_controller --> svc_jobController
@@ -526,6 +531,8 @@ flowchart LR
   svc_actionCards --> pkg_creation_recommendations
   svc_agentDefaultModel --> pkg_api_session_controller
   svc_agentDefaultModel --> pkg_headless
+  svc_agentGroups --> pkg_alfredgo_client_agent_group
+  svc_agentGroups --> pkg_alfredgo_tool_agent_group
   svc_agentLoop --> pkg_base
   svc_agentLoop --> pkg_sdk_minimal
   svc_agentTeams --> pkg_tool_agent_team
@@ -711,6 +718,7 @@ flowchart LR
 | `ctx.actionCards` | `service` | [`action-cards`](../packages/experimental/action-cards) | - | [`creation-recommendations`](../packages/experimental/creation-recommendations), [`client-ui-action-cards`](../packages/experimental/client-ui-action-cards) | - | Owns card state, user actions and status notices; card kinds register their actions and handlers. |
 | `ctx.pluginRecommendations` | `service` | [`plugin-recommendations`](../packages/experimental/plugin-recommendations) | - | [`client-ui-plugin-recommendations`](../packages/experimental/client-ui-plugin-recommendations) | - | Reads the current catalog text of an official plugin card and enables the plugin through the profile plugin manager after a click. |
 | `ctx.secretApprover` | `service` | [`alfredgo-secret-approver`](../packages/alfredgo/alfredgo-secret-approver) | - | [`alfredgo-client-secret-approver`](../packages/alfredgo/alfredgo-client-secret-approver) | - | Forwards the browser approver's allowlisted calls to the configured AgentSecret relay; bodies hold only signed texts and sealed boxes. |
+| `ctx.agentGroups` | `service` | [`alfredgo-agent-group`](../packages/alfredgo/alfredgo-agent-group) | - | [`alfredgo-tool-agent-group`](../packages/alfredgo/alfredgo-tool-agent-group), [`alfredgo-client-agent-group`](../packages/alfredgo/alfredgo-client-agent-group) | - | Keeps groups of long-lived agents joined by an acyclic graph of reporting lines, and delivers assignments and reports between member Sessions. |
 | `ctx.deepseekChatImport` | `service` | [`deepseek-chat-import`](../packages/experimental/deepseek-chat-import) | - | - | - | Serves the owner-only upload route that imports each conversation of a DeepSeek chat export as a Session, and the upload limits the browser checks first. |
 | `ctx.headlessStartup` | `core` | [`headless`](../packages/bundle/headless) | - | [`headless`](../packages/bundle/headless) | - | Supplies parsed task and run options to the headless runner and its sandbox-policy configuration. |
 | `ctx.cotTranslation` | `service` | [`experimental-client-ui-cot-translation`](../packages/experimental/client-ui-cot-translation) | - | - | - | Serves reasoning translations, reuses saved results, and joins ordinary Session activation for uncached inactive Sessions. |

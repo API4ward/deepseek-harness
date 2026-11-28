@@ -90,7 +90,7 @@ interface AgentGroupAssignment {
 - 成员：`addMember`（新建）、`attachSession`（把已有会话拉进来）、`updateMember`、`removeMember`、`resetMemberSession`（给成员换一个新的常驻会话，旧会话留在历史里）。
 - 关系：`setEdges(groupId, edges, expectedRevision)`，整组替换。校验：两端都是本组成员、没有自环、没有重复边、整张图无环。成环时返回 `agent-group/cycle`，并带上构成环的成员路径，界面据此提示。`expectedRevision` 不一致时返回 `agent-group/conflict`。
 - 运行时：`memberOfSession(sessionId)`、`assign(...)`、`report(...)`、`assignments(groupId)`。
-- 事件：`agent-group/changed`，客户端据此刷新。
+- 刷新：`watch` 流在每次修改后发送一份完整快照，客户端据此刷新。
 
 把已有会话拉进组群的规则：
 
@@ -184,3 +184,14 @@ interface AgentGroupMessageSource {
 ## 对后续上游同步的影响
 
 新增代码都在 `packages/alfredgo/` 下，不与上游文件冲突。依赖的上游接口是 `sessionController.resolveAgent`、`agent.followup` 与 `agent.steer`、`storageDomain`、`MessageSourceMap`、工具的 `when` 条件，以及客户端的 `sidebar.panellist`、`main`、`sidebar.session.row.leading` 插槽。上游这些接口还未稳定，同步时如有改名，在同步 PR 内跟着改。
+
+## 实现与设计的差异
+
+- **Remote 方法名**：组群的增删改在 Remote 上叫 `createGroup`、`updateGroup`、`removeGroup`，因为每个 Remote 命名空间都保留了 `remove`。服务自身的方法仍是 `create`、`update`、`remove`。
+- **拒绝代码**：所有拒绝在 Remote 上是同一个错误 `agent-group/refused`，具体原因在 `details.code` 里（如 `cycle`、`conflict`、`session-in-use`），成环时 `details.cycle` 带上环上的成员名。
+- **读取方法**：没有单独的 `list`、`get`、`assignments`；`snapshot` 和 `watch` 一次给出全部组群和保留的分派记录。`memberOfSession` 实现为 `membershipOf` 和同步的 `isMember`。
+- **没有 `agent-group/changed` 事件**：`watch` 流已经覆盖了客户端刷新，事件没有使用方，所以没有加。
+- **分派消息多了一行**：消息第二行写明收件成员的名字和职责。真实模型联调时，下级曾把自己当成负责人来回答，加上这一行后不再出现。
+- **会话里的显示**：分派和汇报在会话里显示为程序投递消息通用的折叠卡片，没有做组群专用卡片。
+- **循环检查有两份**：浏览器包不能导入 Host 代码，页面自己做一次检查用于即时提示，保存时由 Host 判定。
+- **会话快照没有做**：快照工具只回放随产品发布的 profile，组群是叠加配置加载的。模型可见的文本由 `alfredgo-tool-agent-group/tests/tools.spec.ts` 在真实 agent 循环里逐字校验，另有通过 Loader 启动 `cordis.yml` 的组合测试。

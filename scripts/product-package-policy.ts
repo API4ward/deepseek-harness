@@ -19,6 +19,10 @@ export const PRODUCT_PACKAGE_POLICY: Readonly<Record<string, ProductPackagePolic
   'packages/alfredgo/alfredgo-secret-guard': { category: 'optional', reason: 'AlfredGo overlay plugin that requires a separately installed AgentSecret injector.' },
   'packages/alfredgo/alfredgo-secret-approver': { category: 'optional', reason: 'AlfredGo overlay plugin that requires a separately run AgentSecret relay.' },
   'packages/alfredgo/alfredgo-client-secret-approver': { category: 'optional', reason: 'AlfredGo overlay Client plugin selected together with the AgentSecret relay forwarder.' },
+  // ALFREDGO: AG-3 agent groups, see alfredgo/PATCHES.md.
+  'packages/alfredgo/alfredgo-agent-group': { category: 'optional', reason: 'AlfredGo overlay plugin that keeps agent groups and delivers assignments and reports between member Sessions.' },
+  'packages/alfredgo/alfredgo-tool-agent-group': { category: 'optional', reason: 'AlfredGo overlay plugin that offers the group tools to Sessions that are group members.' },
+  'packages/alfredgo/alfredgo-client-agent-group': { category: 'optional', reason: 'AlfredGo overlay Client plugin selected together with the agent group service.' },
   'packages/session-query/tool-session-list': { category: 'optional', reason: 'Explicitly grants model callers read access to runtime Workspace and Session metadata.' },
   'packages/host/authentication-desktop': { category: 'optional', reason: 'Mounted by the private Desktop Host with its parent-process credential, outside default Web profiles.' },
   'packages/core/agent-tool-presentation': { category: 'optional', reason: 'Deprecated selector retained for existing executor configurations.' },

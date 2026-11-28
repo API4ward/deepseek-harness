@@ -1,0 +1,85 @@
+# Bilingual-pair consistency record for README.md (docs/i18n/README.md): per heading
+# section, a hash of its English and Chinese blocks outside code blocks and generated regions.
+# After editing either side, bring the other along and re-record with:
+#   pnpm run verify-translation-pairing --write packages/alfredgo/alfredgo-agent-group/README.md
+/:
+  en: 2cbf927d1c470e89
+  zh: c1bb1f12962fe8d5
+/deepseek-ai-dsh-alfredgo-agent-group:
+  en: b8cb2fc21c687111
+  zh: 2c578b33b971dc1e
+/deepseek-ai-dsh-alfredgo-agent-group/summary:
+  en: 168dd56ae310f0d3
+  zh: f3b124900b084a40
+/deepseek-ai-dsh-alfredgo-agent-group/table-of-contents:
+  en: d152484eb41ac6b4
+  zh: cf666e604d5d044e
+/deepseek-ai-dsh-alfredgo-agent-group/use-this-package:
+  en: be39c4a36bd65908
+  zh: 67e983f345631fd2
+/deepseek-ai-dsh-alfredgo-agent-group/use-this-package/configuration:
+  en: 4741a96fa6f4eb6d
+  zh: 1b6e4f09f7eab39a
+/deepseek-ai-dsh-alfredgo-agent-group/use-this-package/members:
+  en: fc1ba24ec149ae24
+  zh: 988be9c0d2e9fcd6
+/deepseek-ai-dsh-alfredgo-agent-group/use-this-package/reporting-lines:
+  en: 0202fd5b32cd737e
+  zh: cfa3545375e8d839
+/deepseek-ai-dsh-alfredgo-agent-group/use-this-package/assignment-and-report:
+  en: ebcee03ab14d8778
+  zh: 468154cf9205526b
+/deepseek-ai-dsh-alfredgo-agent-group/use-this-package/service-api:
+  en: 188928c42041de96
+  zh: beed178b5f8263a0
+/deepseek-ai-dsh-alfredgo-agent-group/understand-the-implementation:
+  en: 407006b60808f460
+  zh: 9e55896cdb9062b6
+/deepseek-ai-dsh-alfredgo-agent-group/further-exploration:
+  en: 24c6583a2d8ba6ea
+  zh: 61ba5cc196c6b758
+/deepseek-ai-dsh-alfredgo-agent-group/model-experience:
+  en: 215e7ba838619b7b
+  zh: a311da3843709f90
+/deepseek-ai-dsh-alfredgo-agent-group/model-experience/assignment-delivered-to-a-subordinate:
+  en: 14adf598489ad842
+  zh: 390c74e0ef0f3156
+/deepseek-ai-dsh-alfredgo-agent-group/model-experience/assignment-delivered-to-a-subordinate/what-the-model-sees:
+  en: bbe279690cd1cc7a
+  zh: c724e002a4a961e5
+/deepseek-ai-dsh-alfredgo-agent-group/model-experience/assignment-delivered-to-a-subordinate/token-effect:
+  en: c16acc3c7d279a01
+  zh: f393957c9db87322
+/deepseek-ai-dsh-alfredgo-agent-group/model-experience/assignment-delivered-to-a-subordinate/kv-cache-effect:
+  en: 1d73de7fb2b2f266
+  zh: dc132aefdec9ac3c
+/deepseek-ai-dsh-alfredgo-agent-group/model-experience/report-delivered-to-a-superior:
+  en: a247b4ca69638b73
+  zh: ff2a61a0123b7782
+/deepseek-ai-dsh-alfredgo-agent-group/model-experience/report-delivered-to-a-superior/what-the-model-sees:
+  en: fa8d3f9597150054
+  zh: 10be6ea985b5a0e9
+/deepseek-ai-dsh-alfredgo-agent-group/model-experience/report-delivered-to-a-superior/token-effect:
+  en: ed892d26b89ed272
+  zh: e9507211e6012158
+/deepseek-ai-dsh-alfredgo-agent-group/model-experience/report-delivered-to-a-superior/kv-cache-effect:
+  en: 21366978cd60f8bc
+  zh: 81db1ee2d68d4183
+/deepseek-ai-dsh-alfredgo-agent-group/model-experience/joining-and-leaving-notice:
+  en: d06ac78b40500e78
+  zh: ad264f7b9cf5e968
+/deepseek-ai-dsh-alfredgo-agent-group/model-experience/joining-and-leaving-notice/what-the-model-sees:
+  en: 8f85ca0e9a628bc5
+  zh: 112b0bfee2e1e6e4
+/deepseek-ai-dsh-alfredgo-agent-group/model-experience/joining-and-leaving-notice/token-effect:
+  en: 3f1f52eac69d72b2
+  zh: 477b12aa7cfde652
+/deepseek-ai-dsh-alfredgo-agent-group/model-experience/joining-and-leaving-notice/kv-cache-effect:
+  en: 5aea577e17957188
+  zh: 0388fcd8bc2b9515
+/deepseek-ai-dsh-alfredgo-agent-group/known-limitations-and-deferred-work:
+  en: f402567a4c883449
+  zh: de97209a88b2b0c0
+/deepseek-ai-dsh-alfredgo-agent-group/known-limitations-and-deferred-work/dev-note:
+  en: 504b1ba4cddbe76d
+  zh: 231700f3326055ce

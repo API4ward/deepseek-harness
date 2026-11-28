@@ -133,6 +133,186 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
     ],
   },
   {
+    key: 'agentGroups',
+    summary: 'Durable groups and the delivery of assignments and reports between members.',
+    description: 'Durable groups and the delivery of assignments and reports between members. Management reads and writes never activate a Session; assigning, reporting, and joining or leaving with an existing Session do.',
+    methods: [
+      {
+        signature: '@Remote async snapshot(): Promise<AgentGroupSnapshot>',
+        description: 'Read every group and retained assignment.',
+        parameters: [],
+        returns: 'groups by creation time and assignments newest first.',
+      },
+      {
+        signature: '@Remote({ mode: \'stream\' }) async *watch(signal: AbortSignal): AsyncIterable<AgentGroupSnapshot>',
+        description: 'Follow every group and retained assignment.',
+        parameters: [{ name: 'signal', description: 'cancellation owned by the Remote stream carrier.' }],
+        returns: 'the current snapshot, then one snapshot after each change.',
+      },
+      {
+        signature: 'async membershipOf(sessionId: SessionId): Promise<AgentGroupMembership | undefined>',
+        description: 'Find the group membership of one Session without activating it.',
+        parameters: [{ name: 'sessionId', description: 'Session to look up.' }],
+        returns: 'the group and member whose resident Session it is, or `undefined`.',
+      },
+      {
+        signature: 'isMember(sessionId: SessionId): boolean',
+        description: 'Whether a Session is a group member, read synchronously from loaded state.',
+        parameters: [{ name: 'sessionId', description: 'Session to look up.' }],
+        returns: '`false` until storage has loaded.',
+      },
+      {
+        signature: 'async memberView(sessionId: SessionId): Promise<AgentGroupMemberView>',
+        description: 'Describe a member\'s own position: its group, superiors, subordinates, and open assignments.',
+        parameters: [{ name: 'sessionId', description: 'the calling member\'s Session.' }],
+        returns: 'the member\'s current view.',
+        throws: ['{AgentGroupError} `not-a-member` when the Session belongs to no group.'],
+      },
+      {
+        signature: '@Remote(\'createGroup\') remoteCreate(request: AgentGroupCreateRequest): Promise<AgentGroup>',
+        description: 'Create an empty group.',
+        parameters: [{ name: 'request', description: 'title, description, and working directory of created member Sessions.' }],
+        returns: 'the stored group.',
+      },
+      {
+        signature: 'create(request: AgentGroupCreateRequest): Promise<AgentGroup>',
+        description: 'Create an empty group.',
+        parameters: [{ name: 'request', description: 'title, description, and working directory of created member Sessions.' }],
+        returns: 'the stored group.',
+        throws: ['{AgentGroupError} `invalid-input` for an empty or overlong title.'],
+      },
+      {
+        signature: '@Remote(\'updateGroup\') remoteUpdate(request: AgentGroupUpdateRequest): Promise<AgentGroup>',
+        description: 'Change a group\'s title, description, or working directory.',
+        parameters: [{ name: 'request', description: 'group and its changed fields.' }],
+        returns: 'the stored group.',
+      },
+      {
+        signature: 'update(request: AgentGroupUpdateRequest): Promise<AgentGroup>',
+        description: 'Change a group\'s title, description, or working directory.',
+        parameters: [{ name: 'request', description: 'group and its changed fields; an empty `cwd` clears it.' }],
+        returns: 'the stored group.',
+        throws: ['{AgentGroupError} `group-not-found` or `invalid-input`.'],
+      },
+      {
+        signature: '@Remote(\'removeGroup\') remoteRemove(request: AgentGroupRef): Promise<void>',
+        description: 'Delete a group and its assignments. Member Sessions remain as ordinary Sessions.',
+        parameters: [{ name: 'request', description: 'group to delete.' }],
+      },
+      {
+        signature: 'async remove(request: AgentGroupRef): Promise<void>',
+        description: 'Delete a group and its assignments. Member Sessions remain as ordinary Sessions.',
+        parameters: [{ name: 'request', description: 'group to delete.' }],
+        throws: ['{AgentGroupError} `group-not-found`.'],
+      },
+      {
+        signature: '@Remote(\'addMember\') remoteAddMember(request: AgentGroupAddMemberRequest): Promise<AgentGroup>',
+        description: 'Add a member whose Session is created on first use.',
+        parameters: [{ name: 'request', description: 'group, member name, role, and optional preset.' }],
+        returns: 'the stored group.',
+      },
+      {
+        signature: 'addMember(request: AgentGroupAddMemberRequest): Promise<AgentGroup>',
+        description: 'Add a member whose Session is created on first use.',
+        parameters: [{ name: 'request', description: 'group, member name, role, and optional preset.' }],
+        returns: 'the stored group.',
+        throws: ['{AgentGroupError} `group-not-found`, `invalid-input`, `name-in-use`, or `limit`.'],
+      },
+      {
+        signature: '@Remote(\'attachSession\') remoteAttachSession(request: AgentGroupAttachRequest, signal?: AbortSignal): Promise<AgentGroup>',
+        description: 'Add an existing Session as a member. The Session keeps its history, directory, and preset.',
+        parameters: [{ name: 'request', description: 'group, Session, member name, and role.' }, { name: 'signal', description: 'cancellation of the stored Session header read.' }],
+        returns: 'the stored group.',
+      },
+      {
+        signature: 'async attachSession(request: AgentGroupAttachRequest, signal?: AbortSignal): Promise<AgentGroup>',
+        description: 'Add an existing Session as a member. The Session keeps its history, directory, and preset.',
+        parameters: [{ name: 'request', description: 'group, Session, member name, and role.' }, { name: 'signal', description: 'cancellation of the stored Session header read.' }],
+        returns: 'the stored group.',
+        throws: ['{AgentGroupError} `session-unavailable` for a missing, archived, or subagent Session; `session-in-use` when the Session already is a member of a group.'],
+      },
+      {
+        signature: '@Remote(\'updateMember\') remoteUpdateMember(request: AgentGroupUpdateMemberRequest): Promise<AgentGroup>',
+        description: 'Rename a member, change its role, or change the preset of a member whose Session does not exist yet.',
+        parameters: [{ name: 'request', description: 'member and its changed fields.' }],
+        returns: 'the stored group.',
+      },
+      {
+        signature: 'updateMember(request: AgentGroupUpdateMemberRequest): Promise<AgentGroup>',
+        description: 'Rename a member, change its role, or change the preset of a member whose Session does not exist yet.',
+        parameters: [{ name: 'request', description: 'member and its changed fields; an empty `agentPreset` selects the Host default.' }],
+        returns: 'the stored group.',
+        throws: ['{AgentGroupError} `group-not-found`, `member-not-found`, `invalid-input`, or `name-in-use`.'],
+      },
+      {
+        signature: '@Remote(\'removeMember\') remoteRemoveMember(request: AgentGroupMemberRef): Promise<AgentGroup>',
+        description: 'Remove a member, its reporting lines, and its assignments. Its Session remains as an ordinary Session.',
+        parameters: [{ name: 'request', description: 'member to remove.' }],
+        returns: 'the stored group.',
+      },
+      {
+        signature: 'async removeMember(request: AgentGroupMemberRef): Promise<AgentGroup>',
+        description: 'Remove a member, its reporting lines, and its assignments. Its Session remains as an ordinary Session.',
+        parameters: [{ name: 'request', description: 'member to remove.' }],
+        returns: 'the stored group.',
+        throws: ['{AgentGroupError} `group-not-found` or `member-not-found`.'],
+      },
+      {
+        signature: '@Remote(\'resetMemberSession\') remoteResetMemberSession(request: AgentGroupMemberRef): Promise<AgentGroup>',
+        description: 'Give a member a new empty resident Session; the previous Session remains as an ordinary Session. Assignments the member received and has not reported are removed, because the new Session never saw them.',
+        parameters: [{ name: 'request', description: 'member to reset.' }],
+        returns: 'the stored group.',
+      },
+      {
+        signature: 'async resetMemberSession(request: AgentGroupMemberRef): Promise<AgentGroup>',
+        description: 'Give a member a new empty resident Session; the previous Session remains as an ordinary Session. Assignments the member received and has not reported are removed, because the new Session never saw them.',
+        parameters: [{ name: 'request', description: 'member to reset.' }],
+        returns: 'the stored group.',
+        throws: ['{AgentGroupError} `group-not-found` or `member-not-found`.'],
+      },
+      {
+        signature: '@Remote(\'openMember\') remoteOpenMember(request: AgentGroupMemberRef): Promise<{ readonly sessionId: SessionId }>',
+        description: 'Resolve a member\'s Session for the user to open, creating the Session of a `created` member on first use.',
+        parameters: [{ name: 'request', description: 'member whose conversation the user opens.' }],
+        returns: 'the member\'s Session id.',
+      },
+      {
+        signature: 'openMember(request: AgentGroupMemberRef): Promise<{ readonly sessionId: SessionId }>',
+        description: 'Resolve a member\'s Session for the user to open, creating the Session of a `created` member on first use.',
+        parameters: [{ name: 'request', description: 'member whose conversation the user opens.' }],
+        returns: 'the member\'s Session id.',
+        throws: ['{AgentGroupError} `group-not-found`, `member-not-found`, or `delivery-failed` when the Session cannot be activated.'],
+      },
+      {
+        signature: '@Remote(\'setEdges\') remoteSetEdges(request: AgentGroupSetEdgesRequest): Promise<AgentGroup>',
+        description: 'Replace a group\'s reporting lines.',
+        parameters: [{ name: 'request', description: 'group, complete line set, and the revision the editor read.' }],
+        returns: 'the stored group.',
+      },
+      {
+        signature: 'setEdges(request: AgentGroupSetEdgesRequest): Promise<AgentGroup>',
+        description: 'Replace a group\'s reporting lines.',
+        parameters: [{ name: 'request', description: 'group, complete line set, and the revision the editor read.' }],
+        returns: 'the stored group.',
+        throws: ['{AgentGroupError} `conflict` when the group changed since `expectedRevision`; `member-not-found` for a line naming no member; `invalid-input` for a member reporting to itself; `cycle` with the member names along it.'],
+      },
+      {
+        signature: 'assign(sessionId: SessionId, to: string, task: string): Promise<AgentGroupAssignment>',
+        description: 'Assign a task to one direct subordinate of the calling member and deliver it to that member\'s Session.',
+        parameters: [{ name: 'sessionId', description: 'the calling member\'s Session.' }, { name: 'to', description: 'name of a direct subordinate.' }, { name: 'task', description: 'complete task text.' }],
+        returns: 'the open assignment, after the subordinate\'s Session persisted the message.',
+        throws: ['{AgentGroupError} `not-a-member`, `not-a-subordinate`, `invalid-input`, `limit`, or `delivery-failed`.'],
+      },
+      {
+        signature: 'report(sessionId: SessionId, report: string, assignmentId?: AgentGroupAssignmentId): Promise<AgentGroupAssignment>',
+        description: 'Report on an open assignment to the superior that gave it and deliver the report to that member\'s Session.',
+        parameters: [{ name: 'sessionId', description: 'the calling member\'s Session.' }, { name: 'report', description: 'complete report text.' }, { name: 'assignmentId', description: 'assignment reported on; required when the caller holds more than one open assignment.' }],
+        returns: 'the reported assignment, after the superior\'s Session persisted the message.',
+        throws: ['{AgentGroupError} `not-a-member`, `assignment-not-found`, `invalid-input`, or `delivery-failed`.'],
+      },
+    ],
+  },
+  {
     key: 'agentLoop',
     summary: 'Concrete agent factory and driver service.',
     description: 'Concrete agent factory and driver service.',
@@ -6399,6 +6579,86 @@ export const TYPE_API: readonly TypeApiEntry[] = [
     declaration: 'export interface AgentFactory {\n    createAgent(ownerCtx: Context, options: CreateAgentOptions): Promise<AgentHandle>;\n    resume(ownerCtx: Context, options: ResumeAgentOptions): Promise<AgentHandle>;\n}',
   },
   {
+    name: 'AgentGroup',
+    declaration: 'export interface AgentGroup {\n    readonly id: AgentGroupId;\n    readonly title: string;\n    readonly description: string;\n    readonly cwd?: string;\n    readonly members: readonly AgentGroupMember[];\n    readonly edges: readonly AgentGroupEdge[];\n    readonly revision: number;\n    readonly createdAt: string;\n    readonly updatedAt: string;\n}',
+  },
+  {
+    name: 'AgentGroupAddMemberRequest',
+    declaration: 'export interface AgentGroupAddMemberRequest {\n    readonly groupId: AgentGroupId;\n    readonly name: string;\n    readonly role: string;\n    readonly agentPreset?: string;\n}',
+  },
+  {
+    name: 'AgentGroupAssignment',
+    declaration: 'export interface AgentGroupAssignment {\n    readonly id: AgentGroupAssignmentId;\n    readonly groupId: AgentGroupId;\n    readonly from: AgentGroupMemberId;\n    readonly to: AgentGroupMemberId;\n    readonly summary: string;\n    readonly status: \'open\' | \'reported\';\n    readonly createdAt: string;\n    readonly reportedAt?: string;\n}',
+  },
+  {
+    name: 'AgentGroupAssignmentId',
+    declaration: 'export type AgentGroupAssignmentId = Branded<\'AgentGroupAssignmentId\'>;',
+  },
+  {
+    name: 'AgentGroupAttachRequest',
+    declaration: 'export interface AgentGroupAttachRequest {\n    readonly groupId: AgentGroupId;\n    readonly sessionId: SessionId;\n    readonly name: string;\n    readonly role: string;\n}',
+  },
+  {
+    name: 'AgentGroupCreateRequest',
+    declaration: 'export interface AgentGroupCreateRequest {\n    readonly title: string;\n    readonly description?: string;\n    readonly cwd?: string;\n}',
+  },
+  {
+    name: 'AgentGroupEdge',
+    declaration: 'export interface AgentGroupEdge {\n    readonly superior: AgentGroupMemberId;\n    readonly subordinate: AgentGroupMemberId;\n}',
+  },
+  {
+    name: 'AgentGroupId',
+    declaration: 'export type AgentGroupId = Branded<\'AgentGroupId\'>;',
+  },
+  {
+    name: 'AgentGroupMember',
+    declaration: 'export interface AgentGroupMember {\n    readonly id: AgentGroupMemberId;\n    readonly name: string;\n    readonly role: string;\n    readonly origin: \'created\' | \'attached\';\n    readonly agentPreset?: string;\n    readonly sessionId: SessionId;\n}',
+  },
+  {
+    name: 'AgentGroupMemberId',
+    declaration: 'export type AgentGroupMemberId = Branded<\'AgentGroupMemberId\'>;',
+  },
+  {
+    name: 'AgentGroupMemberRef',
+    declaration: 'export interface AgentGroupMemberRef {\n    readonly groupId: AgentGroupId;\n    readonly memberId: AgentGroupMemberId;\n}',
+  },
+  {
+    name: 'AgentGroupMembership',
+    declaration: 'export interface AgentGroupMembership {\n    readonly group: AgentGroup;\n    readonly member: AgentGroupMember;\n}',
+  },
+  {
+    name: 'AgentGroupMemberView',
+    declaration: 'export interface AgentGroupMemberView {\n    readonly group: string;\n    readonly description: string;\n    readonly name: string;\n    readonly role: string;\n    readonly superiors: readonly AgentGroupNeighbor[];\n    readonly subordinates: readonly AgentGroupNeighbor[];\n    readonly received: readonly AgentGroupOpenAssignment[];\n    readonly given: readonly AgentGroupOpenAssignment[];\n}',
+  },
+  {
+    name: 'AgentGroupNeighbor',
+    declaration: 'export interface AgentGroupNeighbor {\n    readonly name: string;\n    readonly role: string;\n    readonly running: boolean;\n}',
+  },
+  {
+    name: 'AgentGroupOpenAssignment',
+    declaration: 'export interface AgentGroupOpenAssignment {\n    readonly id: AgentGroupAssignmentId;\n    readonly member: string;\n    readonly summary: string;\n}',
+  },
+  {
+    name: 'AgentGroupRef',
+    declaration: 'export interface AgentGroupRef {\n    readonly groupId: AgentGroupId;\n}',
+  },
+  {
+    name: 'AgentGroupSetEdgesRequest',
+    declaration: 'export interface AgentGroupSetEdgesRequest {\n    readonly groupId: AgentGroupId;\n    readonly edges: readonly AgentGroupEdge[];\n    readonly expectedRevision: number;\n}',
+  },
+  {
+    name: 'AgentGroupSnapshot',
+    declaration: 'export interface AgentGroupSnapshot {\n    readonly groups: readonly AgentGroup[];\n    readonly assignments: readonly AgentGroupAssignment[];\n}',
+  },
+  {
+    name: 'AgentGroupUpdateMemberRequest',
+    declaration: 'export interface AgentGroupUpdateMemberRequest extends AgentGroupMemberRef {\n    readonly name?: string;\n    readonly role?: string;\n    readonly agentPreset?: string;\n}',
+  },
+  {
+    name: 'AgentGroupUpdateRequest',
+    declaration: 'export interface AgentGroupUpdateRequest {\n    readonly groupId: AgentGroupId;\n    readonly title?: string;\n    readonly description?: string;\n    readonly cwd?: string;\n}',
+  },
+  {
     name: 'AgentHandle',
     declaration: 'export interface AgentHandle {\n    agent: Agent;\n    dispose(): Promise<void>;\n}',
   },
@@ -9057,10 +9317,6 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   {
     name: 'PresetDefinition',
     declaration: 'export interface PresetDefinition {\n    readonly id: string;\n    readonly name?: string;\n    readonly description?: string;\n    readonly order?: number;\n    readonly plugins: readonly (Omit<EntryOptions, \'id\' | \'disabled\'> & {\n        id?: string;\n        disabled?: EntryOptions[\'disabled\'] | JsExpr;\n    })[];\n}',
-  },
-  {
-    name: 'PresetOption',
-    declaration: 'export interface PresetOption {\n    value: string;\n    name: string;\n    description?: string;\n}',
   },
   {
     name: 'PresetSpec',

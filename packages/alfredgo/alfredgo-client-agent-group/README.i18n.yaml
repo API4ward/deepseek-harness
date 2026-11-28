@@ -1,0 +1,49 @@
+# Bilingual-pair consistency record for README.md (docs/i18n/README.md): per heading
+# section, a hash of its English and Chinese blocks outside code blocks and generated regions.
+# After editing either side, bring the other along and re-record with:
+#   pnpm run verify-translation-pairing --write packages/alfredgo/alfredgo-client-agent-group/README.md
+/:
+  en: 30627b12dc325ec2
+  zh: a0dff95bf1ea0b42
+/deepseek-ai-dsh-alfredgo-client-agent-group:
+  en: 3a0b8479106e05a8
+  zh: c4e351bc90952068
+/deepseek-ai-dsh-alfredgo-client-agent-group/summary:
+  en: d66d1b19b786817e
+  zh: 406f791f7d030adb
+/deepseek-ai-dsh-alfredgo-client-agent-group/table-of-contents:
+  en: d152484eb41ac6b4
+  zh: cf666e604d5d044e
+/deepseek-ai-dsh-alfredgo-client-agent-group/use-this-package:
+  en: ca0ea0de951d80ea
+  zh: 6e43beaf261e974a
+/deepseek-ai-dsh-alfredgo-client-agent-group/use-this-package/groups-and-members:
+  en: d2b22a600ebab81a
+  zh: 7d96094233a35b65
+/deepseek-ai-dsh-alfredgo-client-agent-group/use-this-package/reporting-lines:
+  en: ac78604023efcae5
+  zh: 4c2c73d3f6b0a179
+/deepseek-ai-dsh-alfredgo-client-agent-group/use-this-package/activity:
+  en: d1ac7953ecb96d82
+  zh: cacd748d30479192
+/deepseek-ai-dsh-alfredgo-client-agent-group/use-this-package/conversation-list:
+  en: 3e62f61d48afe074
+  zh: e29f132d0c614fce
+/deepseek-ai-dsh-alfredgo-client-agent-group/understand-the-implementation:
+  en: fbc1d9ac35dbcefd
+  zh: 60e63682908c69b5
+/deepseek-ai-dsh-alfredgo-client-agent-group/further-exploration:
+  en: 949722c8830adce8
+  zh: 35d5d7c15aa233a2
+/deepseek-ai-dsh-alfredgo-client-agent-group/model-experience:
+  en: e2463bf98ca285b9
+  zh: 1f5582f36b5e19a2
+/deepseek-ai-dsh-alfredgo-client-agent-group/model-experience/kv-cache-effect:
+  en: 6ff7faa17c7db8f8
+  zh: 7abf6f39a20765d5
+/deepseek-ai-dsh-alfredgo-client-agent-group/known-limitations-and-deferred-work:
+  en: ddb1769558160467
+  zh: a9a1350dc7e85be9
+/deepseek-ai-dsh-alfredgo-client-agent-group/known-limitations-and-deferred-work/dev-note:
+  en: bbfd68913e728677
+  zh: 0b5f5d0b047e0456

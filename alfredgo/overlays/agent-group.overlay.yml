@@ -1,0 +1,10 @@
+# Loader overlay that adds AlfredGo agent groups (AG-3) to a profile:
+#   pnpm dsh web --patch alfredgo/overlays/agent-group.overlay.yml
+# The three rows are the Host service, the model tools, and the Client page.
+- insert:
+    - id: alfredgo-agent-group
+      name: '@deepseek-ai/dsh-alfredgo-agent-group'
+    - id: alfredgo-tool-agent-group
+      name: '@deepseek-ai/dsh-alfredgo-tool-agent-group'
+    - id: alfredgo-client-agent-group
+      name: '@deepseek-ai/dsh-alfredgo-client-agent-group'

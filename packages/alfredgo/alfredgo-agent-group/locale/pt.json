@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Grupos de agentes",
+    "description": "Organiza agentes persistentes num grupo com linhas hierárquicas: os superiores atribuem tarefas e os subordinados reportam."
+  }
+}
